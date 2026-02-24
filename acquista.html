@@ -25,116 +25,221 @@
             }
         }
     </script>
+    <style>
+        .dropdown-content { opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.2s ease; }
+        .group:hover .dropdown-content { opacity: 1; visibility: visible; transform: translateY(0); }
+        .map-container iframe { filter: grayscale(1) invert(0.9) contrast(1.2); }
+        .light .map-container iframe { filter: none; }
+    </style>
 </head>
 <body class="bg-white dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased transition-colors duration-300">
 
     <header class="sticky top-0 z-[100] flex items-center justify-between border-b border-slate-200 dark:border-border-dark bg-white/90 dark:bg-background-dark/95 backdrop-blur-xl px-4 md:px-6 py-4 lg:px-10">
         <div class="flex items-center gap-4 lg:gap-8">
+            <button onclick="window.location.href='index.html'" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary hover:text-primary transition-all">
+                <span class="material-symbols-outlined">home</span>
+            </button>
+
             <div class="flex items-center gap-3 group cursor-pointer" onclick="window.location.href='index.html'">
                 <div class="h-11 w-11 rounded-full border-2 border-primary/30 overflow-hidden bg-white flex items-center justify-center shadow-[0_0_15px_rgba(42,94,255,0.3)]">
                     <img src="Screenshot 2026-02-24 at 16-07-26 NIGHT PASS - NIGHT PASS.pdf.png" alt="Logo" class="h-full w-full object-cover scale-110">
                 </div>
                 <h2 class="text-lg md:text-xl font-black uppercase tracking-tighter">NightPass</h2>
             </div>
-
-            <nav class="hidden items-center gap-8 lg:flex ml-4">
-                <a href="index.html" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Home</a>
-                <a href="#" class="text-sm font-bold uppercase tracking-widest text-primary">Eventi</a>
-                <a href="#" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Locali</a>
-            </nav>
         </div>
 
         <div class="flex flex-1 justify-end gap-3 items-center">
-            
             <div class="relative group">
                 <button class="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-surface-dark border border-transparent hover:border-primary transition-all">
                     <img id="lang-flag" src="https://flagcdn.com/w40/it.png" class="w-5 h-3.5 object-cover rounded-sm">
                     <span id="lang-label" class="text-xs font-bold uppercase">ITA</span>
                 </button>
-                <div class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <button onclick="changeLang('it', 'ITA', 'https://flagcdn.com/w40/it.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
+                <div class="dropdown-content absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl p-1">
+                    <button onclick="changeLang('it', 'ITA', 'https://flagcdn.com/w40/it.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all text-slate-900 dark:text-white text-left">
                         <img src="https://flagcdn.com/w40/it.png" class="w-4 h-3"> ITA
                     </button>
-                    <button onclick="changeLang('en', 'ENG', 'https://flagcdn.com/w40/gb.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
+                    <button onclick="changeLang('en', 'ENG', 'https://flagcdn.com/w40/gb.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all text-slate-900 dark:text-white text-left">
                         <img src="https://flagcdn.com/w40/gb.png" class="w-4 h-3"> ENG
                     </button>
                 </div>
             </div>
 
-            <button onclick="toggleTheme()" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary transition-all">
+            <button onclick="toggleTheme()" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary transition-all text-slate-900 dark:text-white">
                 <span id="theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
             </button>
 
-            <div class="relative group lg:hidden">
-                <button class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
-                <div class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <a href="#" class="block px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Home</a>
-                    <a href="#" class="block px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Eventi</a>
-                    <div class="my-2 border-t border-slate-100 dark:border-border-dark"></div>
-                    <button class="w-full py-3 bg-primary text-white rounded-xl font-bold uppercase tracking-widest text-xs">Accedi</button>
-                </div>
-            </div>
-
-            <button class="hidden md:flex h-10 px-8 items-center justify-center rounded-full bg-primary text-white text-sm font-black uppercase tracking-widest hover:scale-105 transition-all">
+            <button class="hidden md:flex h-10 px-8 items-center justify-center rounded-full bg-primary text-white text-sm font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
                 Accedi
             </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-2 gap-12">
-        <div class="space-y-8">
+        
+        <div class="space-y-10">
             <div class="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1514525253361-bee243870eb2?auto=format&fit=crop&w=1000&q=80" alt="Evento" class="w-full h-full object-cover">
+                <img src="foto2.jpeg" alt="Evento" class="w-full h-full object-cover">
                 <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/40 to-transparent">
-                    <span class="bg-primary text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Disponibile solo in App</span>
-                    <h1 class="text-4xl md:text-5xl font-black uppercase mt-4 leading-none text-white">Summer Vibe <br><span class="text-primary">Festival 2026</span></h1>
+                    <span class="bg-primary text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Biglietti Disponibili</span>
+                    <h1 class="text-4xl md:text-6xl font-black uppercase mt-4 leading-none text-white">Summer Vibe <br><span class="text-primary">Festival 2026</span></h1>
                 </div>
             </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-50 dark:bg-surface-dark p-6 rounded-[2.5rem] border border-slate-200 dark:border-border-dark">
+                    <span class="material-symbols-outlined text-primary mb-2">calendar_today</span>
+                    <p class="text-xs font-bold uppercase opacity-50">Data</p>
+                    <p class="text-lg font-black uppercase">24 GIUGNO 2026</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-surface-dark p-6 rounded-[2.5rem] border border-slate-200 dark:border-border-dark">
+                    <span class="material-symbols-outlined text-primary mb-2">schedule</span>
+                    <p class="text-xs font-bold uppercase opacity-50">Orario</p>
+                    <p class="text-lg font-black uppercase">22:30 - 05:00</p>
+                </div>
             </div>
 
+            <div class="space-y-4">
+                <h3 class="text-2xl font-black uppercase flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">info</span> Descrizione
+                </h3>
+                <p id="event-desc" class="text-slate-500 dark:text-text-secondary-dark leading-relaxed font-medium">
+                    Il festival più iconico dell'estate milanese torna nella location esclusiva del Just Me (Parco Sempione). 
+                    Una notte indimenticabile con i migliori DJ della scena internazionale. 
+                    <br><br>
+                    <strong>Dress Code:</strong> Summer Chic / Elegant<br>
+                    <strong>Età Minima:</strong> 18+
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-2xl font-black uppercase flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">location_on</span> Dove Siamo
+                </h3>
+                <div class="map-container w-full h-72 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-inner">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m12!1m3!1d2797.986603411139!2d9.172428176840428!3d45.47007723304561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c14408990c0b%3A0x6a0c0e9d6c42964!2sJust%20Me%20Milano!5e0!3m2!1sit!2sit!4v1700000000000!5m2!1sit!2sit" 
+                        class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <p class="text-center text-xs font-bold uppercase opacity-40">Just Me - Viale Luigi Camoens, 20121 Milano MI</p>
+            </div>
+        </div>
+
         <div class="lg:sticky lg:top-24 h-fit">
-            <div class="bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-primary/30 rounded-[3rem] p-8 md:p-12 shadow-xl relative overflow-hidden text-center">
-                <h2 class="text-3xl font-black uppercase mb-4 leading-tight">Scarica l'app per acquistare</h2>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                    <a href="#" class="flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-4 rounded-2xl hover:scale-105 transition-all group">
-                        <div class="text-left leading-none">
-                            <p class="text-[10px] uppercase font-bold opacity-60">Download on</p>
-                            <p class="text-lg font-black">App Store</p>
+            <div class="bg-slate-50 dark:bg-surface-dark border-2 border-primary/20 dark:border-primary/30 rounded-[3rem] p-8 md:p-10 shadow-2xl">
+                
+                <div class="text-center mb-10">
+                    <p class="text-primary font-black uppercase tracking-[0.2em] text-xs mb-2">Biglietteria Ufficiale</p>
+                    <h2 class="text-4xl font-black uppercase">Ticket List</h2>
+                </div>
+
+                <div class="space-y-4 mb-10">
+                    <div class="flex justify-between items-center p-5 bg-white dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-border-dark">
+                        <div>
+                            <p class="font-black uppercase text-sm">Early Bird</p>
+                            <p class="text-[10px] opacity-50 uppercase font-bold text-green-500">Disponibilità Limitata</p>
                         </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-4 rounded-2xl hover:scale-105 transition-all group">
-                        <div class="text-left leading-none">
-                            <p class="text-[10px] uppercase font-bold opacity-60">Get it on</p>
-                            <p class="text-lg font-black">Google Play</p>
+                        <span class="text-2xl font-black text-primary">€25.00</span>
+                    </div>
+                    <div class="flex justify-between items-center p-5 bg-white dark:bg-background-dark rounded-3xl border border-slate-200 dark:border-border-dark">
+                        <div>
+                            <p class="font-black uppercase text-sm">Regular Ticket</p>
+                            <p class="text-[10px] opacity-50 uppercase font-bold">In vendita</p>
                         </div>
-                    </a>
+                        <span class="text-2xl font-black text-primary">€35.00</span>
+                    </div>
+                    <div class="flex justify-between items-center p-5 bg-primary/5 rounded-3xl border-2 border-primary/40">
+                        <div>
+                            <p class="font-black uppercase text-sm">VIP Gold Pass</p>
+                            <p class="text-[10px] text-primary uppercase font-bold">Accesso Prioritario + Drink</p>
+                        </div>
+                        <span class="text-2xl font-black text-primary">€60.00</span>
+                    </div>
+                </div>
+
+               <div class="space-y-6">
+    <p id="cta-text" class="text-center text-[10px] font-black uppercase tracking-[0.3em] text-primary/80">Official Mobile Experience</p>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="#" class="group relative flex items-center justify-center gap-3 bg-slate-950 dark:bg-white text-white dark:text-black h-[70px] rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(42,94,255,0.15)] border border-white/10 dark:border-black/5">
+            <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+            
+            <svg class="w-7 h-7 transition-transform duration-500 group-hover:scale-110" viewBox="0 0 384 512" fill="currentColor">
+                <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 21.8-88.5 21.8-11.4 0-51.1-20.8-83.6-20.8-42.3.1-81.2 24.1-103 61.9-44.6 77.4-11.4 190.6 31.6 252.4 21 30.2 46.6 63.7 79.4 62.5 30.6-1.1 42.5-19.8 79-19.8 36 0 47.5 19.8 79.1 19.2 33.2-.6 54.4-30.2 75.3-60.7 24.5-35.7 34.5-70.3 34.8-72.1-1.1-.4-67.4-25.9-67.6-102.3zM232.2 79.2c15.8-19.7 24.5-47 21.5-74.1-23.3 1-51.2 15.5-67.9 34.9-14.9 17.2-28 45.3-24.3 71.9 25.9 2 52.8-13.2 70.7-32.7z"/>
+            </svg>
+            
+            <div class="text-left leading-tight z-10">
+                <p class="text-[9px] uppercase font-bold opacity-60 tracking-wider">Available on</p>
+                <p class="text-lg font-black tracking-tight">App Store</p>
+            </div>
+        </a>
+
+        <a href="#" class="group relative flex items-center justify-center gap-3 bg-slate-950 dark:bg-white text-white dark:text-black h-[70px] rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(42,94,255,0.15)] border border-white/10 dark:border-black/5">
+            <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+            
+            <svg class="w-7 h-7 transition-transform duration-500 group-hover:rotate-[12deg]" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-10.3 18-28.5-1.2-40.8zM303.6 277.3l-256.6 256c10.7 3.2 21 3.2 30.7-2.3L407 363.4l-103.4-86.1z"/>
+            </svg>
+            
+            <div class="text-left leading-tight z-10">
+                <p class="text-[9px] uppercase font-bold opacity-60 tracking-wider">Get it on</p>
+                <p class="text-lg font-black tracking-tight">Google Play</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+                <div class="mt-8 flex items-center justify-center gap-4 opacity-40">
+                    <span class="material-symbols-outlined">verified_user</span>
+                    <p class="text-[10px] uppercase font-bold tracking-widest text-center">Ogni biglietto è unico, criptato e nominale</p>
                 </div>
             </div>
         </div>
     </main>
 
+    <footer class="py-10 text-center border-t border-slate-200 dark:border-border-dark opacity-30 text-[10px] font-bold uppercase tracking-[0.3em]">
+        NightPass Ticketing System • 2026
+    </footer>
+
     <script>
-        // FUNZIONE CAMBIO TEMA
         function toggleTheme() {
             const html = document.documentElement;
-            const themeIcon = document.getElementById('theme-icon');
-            
+            const icon = document.getElementById('theme-icon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                themeIcon.innerText = 'dark_mode'; // Cambia in luna quando sei in light
+                document.body.classList.remove('dark');
+                icon.innerText = 'dark_mode';
+                localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                themeIcon.innerText = 'light_mode'; // Cambia in sole quando sei in dark
+                document.body.classList.add('dark');
+                icon.innerText = 'light_mode';
+                localStorage.setItem('theme', 'dark');
             }
         }
 
-        // FUNZIONE CAMBIO LINGUA
         function changeLang(lang, label, flag) {
             document.getElementById('lang-label').innerText = label;
             document.getElementById('lang-flag').src = flag;
-            console.log('Lingua cambiata in:', lang);
+
+            const t = {
+                it: {
+                    cta: "Scarica NightPass per acquistare",
+                    desc: "Il festival più iconico dell'estate milanese torna nella location esclusiva del Just Me (Parco Sempione). Una notte indimenticabile con i migliori DJ della scena internazionale."
+                },
+                en: {
+                    cta: "Download NightPass to purchase",
+                    desc: "The most iconic festival of the Milanese summer returns to the exclusive Just Me location (Parco Sempione). An unforgettable night with the best DJs on the international scene."
+                }
+            };
+
+            document.getElementById('cta-text').innerText = t[lang].cta;
+            document.getElementById('event-desc').innerHTML = t[lang].desc + "<br><br><strong>Dress Code:</strong> Summer Chic / Elegant<br><strong>Min Age:</strong> 18+";
+        }
+
+        // Recupero tema salvato
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-icon').innerText = 'dark_mode';
         }
     </script>
 </body>
