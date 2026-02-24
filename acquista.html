@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Acquista Biglietto - NightPass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2a5eff",
+                        "primary-dark": "#1a45cc",
+                        "background-dark": "#0a0a12",
+                        "surface-dark": "#151520",
+                        "border-dark": "#232334",
+                        "text-secondary-dark": "#a0a0b8",
+                    },
+                    fontFamily: { "display": ["Be Vietnam Pro", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased transition-colors duration-300">
+
+    <header class="sticky top-0 z-[100] flex items-center justify-between border-b border-slate-200 dark:border-border-dark bg-white/90 dark:bg-background-dark/95 backdrop-blur-xl px-4 md:px-6 py-4 lg:px-10">
+        <div class="flex items-center gap-4 lg:gap-8">
+            <div class="flex items-center gap-3 group cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="h-11 w-11 rounded-full border-2 border-primary/30 overflow-hidden bg-white flex items-center justify-center shadow-[0_0_15px_rgba(42,94,255,0.3)]">
+                    <img src="Screenshot 2026-02-24 at 16-07-26 NIGHT PASS - NIGHT PASS.pdf.png" alt="Logo" class="h-full w-full object-cover scale-110">
+                </div>
+                <h2 class="text-lg md:text-xl font-black uppercase tracking-tighter">NightPass</h2>
+            </div>
+
+            <nav class="hidden items-center gap-8 lg:flex ml-4">
+                <a href="index.html" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Home</a>
+                <a href="#" class="text-sm font-bold uppercase tracking-widest text-primary">Eventi</a>
+                <a href="#" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Locali</a>
+            </nav>
+        </div>
+
+        <div class="flex flex-1 justify-end gap-3 items-center">
+            
+            <div class="relative group">
+                <button class="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-surface-dark border border-transparent hover:border-primary transition-all">
+                    <img id="lang-flag" src="https://flagcdn.com/w40/it.png" class="w-5 h-3.5 object-cover rounded-sm">
+                    <span id="lang-label" class="text-xs font-bold uppercase">ITA</span>
+                </button>
+                <div class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                    <button onclick="changeLang('it', 'ITA', 'https://flagcdn.com/w40/it.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
+                        <img src="https://flagcdn.com/w40/it.png" class="w-4 h-3"> ITA
+                    </button>
+                    <button onclick="changeLang('en', 'ENG', 'https://flagcdn.com/w40/gb.png')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
+                        <img src="https://flagcdn.com/w40/gb.png" class="w-4 h-3"> ENG
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="toggleTheme()" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary transition-all">
+                <span id="theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
+            </button>
+
+            <div class="relative group lg:hidden">
+                <button class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                    <a href="#" class="block px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Home</a>
+                    <a href="#" class="block px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Eventi</a>
+                    <div class="my-2 border-t border-slate-100 dark:border-border-dark"></div>
+                    <button class="w-full py-3 bg-primary text-white rounded-xl font-bold uppercase tracking-widest text-xs">Accedi</button>
+                </div>
+            </div>
+
+            <button class="hidden md:flex h-10 px-8 items-center justify-center rounded-full bg-primary text-white text-sm font-black uppercase tracking-widest hover:scale-105 transition-all">
+                Accedi
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-2 gap-12">
+        <div class="space-y-8">
+            <div class="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1514525253361-bee243870eb2?auto=format&fit=crop&w=1000&q=80" alt="Evento" class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/40 to-transparent">
+                    <span class="bg-primary text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Disponibile solo in App</span>
+                    <h1 class="text-4xl md:text-5xl font-black uppercase mt-4 leading-none text-white">Summer Vibe <br><span class="text-primary">Festival 2026</span></h1>
+                </div>
+            </div>
+            </div>
+
+        <div class="lg:sticky lg:top-24 h-fit">
+            <div class="bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-primary/30 rounded-[3rem] p-8 md:p-12 shadow-xl relative overflow-hidden text-center">
+                <h2 class="text-3xl font-black uppercase mb-4 leading-tight">Scarica l'app per acquistare</h2>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                    <a href="#" class="flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-4 rounded-2xl hover:scale-105 transition-all group">
+                        <div class="text-left leading-none">
+                            <p class="text-[10px] uppercase font-bold opacity-60">Download on</p>
+                            <p class="text-lg font-black">App Store</p>
+                        </div>
+                    </a>
+                    <a href="#" class="flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-4 rounded-2xl hover:scale-105 transition-all group">
+                        <div class="text-left leading-none">
+                            <p class="text-[10px] uppercase font-bold opacity-60">Get it on</p>
+                            <p class="text-lg font-black">Google Play</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // FUNZIONE CAMBIO TEMA
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.innerText = 'dark_mode'; // Cambia in luna quando sei in light
+            } else {
+                html.classList.add('dark');
+                themeIcon.innerText = 'light_mode'; // Cambia in sole quando sei in dark
+            }
+        }
+
+        // FUNZIONE CAMBIO LINGUA
+        function changeLang(lang, label, flag) {
+            document.getElementById('lang-label').innerText = label;
+            document.getElementById('lang-flag').src = flag;
+            console.log('Lingua cambiata in:', lang);
+        }
+    </script>
+</body>
+</html>
