@@ -67,7 +67,16 @@
                 </div>
                 <h2 class="text-lg md:text-xl font-black uppercase tracking-tighter">NightPass</h2>
             </div>
-
+                <div class="relative hidden sm:block max-w-xs w-full mx-4">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+    <input 
+        type="text" 
+        id="search-input" 
+        placeholder="Cerca evento o locale..." 
+        class="w-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-full py-2 pl-10 pr-4 text-xs font-bold uppercase tracking-wider focus:outline-none focus:border-primary transition-all text-slate-900 dark:text-white"
+        onkeyup="filtraEventi()"
+    >
+</div>
             <nav class="hidden items-center gap-8 lg:flex ml-4">
                 <a href="#" class="nav-home flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Home</a>
                     <a href="#carousel-container" class="nav-events flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Eventi</a>
@@ -90,7 +99,7 @@
                     </button>
                 </div>
             </div>
-
+            
             <button onclick="toggleTheme()" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary transition-all">
                 <span id="theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
             </button>
@@ -846,6 +855,8 @@
         startCarousel('.carousel-foto', 0.5);
         startCarousel('.carousel-reviews', 0.5); // Recensioni un po' più lente
     });
+
+
 </script>
 
 </body>
