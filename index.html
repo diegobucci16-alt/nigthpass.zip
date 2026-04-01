@@ -1,863 +1,1092 @@
 <!DOCTYPE html>
-<html class="dark" lang="it">
+<html lang="it">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>NightPass - Event Ticketing Platform</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#2a5eff", 
-                        "primary-dark": "#1a45cc",
-                        "accent": "#00f0ff", 
-                        "background-dark": "#0a0a12",
-                        "surface-dark": "#151520",
-                        "border-dark": "#232334",
-                        "text-secondary-dark": "#a0a0b8",
-                    },
-                    fontFamily: { "display": ["Be Vietnam Pro", "sans-serif"] }
-                },
-            },
-        }
-    </script>
-    <style>
-        .text-glow { text-shadow: 0 0 20px rgba(42, 94, 255, 0.5); }
-        .dropdown-animate { opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.95); transition: all 0.3s ease; }
-        .group:hover .dropdown-animate { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-        .transition-colors { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        
-        /* Stili Galleria Foto */
-        .carousel-wrapper {
-            display: flex;
-            overflow-x: hidden;
-            white-space: nowrap;
-            gap: 20px;
-            padding: 20px 0;
-        }
-        .slide-box {
-            flex: 0 0 300px;
-            height: 400px;
-            border-radius: 2rem;
-            overflow: hidden;
-        }
-        .slide-box img {
-            width: 100%;
-            height: 100%;
-            object-cover: cover;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NightPass — Vivi la Notte</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020408;
+    --bg2: #060d18;
+    --surface: #0a1628;
+    --surface2: #0f1f3a;
+    --blue: #0057ff;
+    --blue2: #003dbd;
+    --electric: #00b4ff;
+    --electric2: #00eaff;
+    --accent: #1a3fff;
+    --text: #f0f6ff;
+    --text2: #8aabd4;
+    --text3: #4a6a94;
+    --border: rgba(0,100,255,0.18);
+    --glow: 0 0 30px rgba(0,180,255,0.25);
+    --glow2: 0 0 60px rgba(0,87,255,0.3);
+    --card-bg: rgba(10,22,40,0.85);
+    --transition: 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  .light-mode {
+    --bg: #f0f4ff;
+    --bg2: #e6ecfa;
+    --surface: #ffffff;
+    --surface2: #f5f8ff;
+    --text: #0a1628;
+    --text2: #2a4a7a;
+    --text3: #8aabd4;
+    --border: rgba(0,87,255,0.15);
+    --card-bg: rgba(255,255,255,0.9);
+    --glow: 0 0 30px rgba(0,87,255,0.1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    transition: background var(--transition), color var(--transition);
+  }
+
+  /* ANIMATED BACKGROUND */
+  .bg-mesh {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,87,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(0,180,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,60,180,0.05) 0%, transparent 70%);
+    animation: meshMove 12s ease-in-out infinite alternate;
+  }
+  @keyframes meshMove {
+    0% { opacity:1; transform:scale(1) translateY(0); }
+    100% { opacity:.7; transform:scale(1.05) translateY(-20px); }
+  }
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,87,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,87,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift { 0%{transform:translateY(0)} 100%{transform:translateY(60px)} }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 70px;
+    background: rgba(2,4,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .light-mode nav { background: rgba(240,244,255,0.9); }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, var(--electric) 0%, var(--blue) 60%, var(--electric2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    cursor: pointer;
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 500;
+    letter-spacing: .05em;
+    transition: color .2s;
+    cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--electric); }
+
+  .nav-controls { display: flex; align-items: center; gap: 1rem; }
+
+  .lang-btn, .theme-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: .35rem .8rem;
+    border-radius: 6px;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: .05em;
+  }
+  .lang-btn:hover, .theme-btn:hover {
+    border-color: var(--electric);
+    color: var(--electric);
+    box-shadow: 0 0 12px rgba(0,180,255,0.2);
+  }
+  .lang-selector { position: relative; }
+  .lang-dropdown {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+    min-width: 120px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    z-index: 9999;
+  }
+  .lang-dropdown.open { display: block; animation: fadeDown .15s ease; }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .lang-dropdown button {
+    width: 100%; background: none; border: none;
+    color: var(--text2); padding: .6rem 1rem;
+    font-size: .85rem; text-align: left; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: background .15s, color .15s;
+  }
+  .lang-dropdown button:hover { background: var(--surface2); color: var(--electric); }
+  .lang-dropdown button.active { color: var(--electric); font-weight: 600; }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 120px 5% 80px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(0,87,255,0.12);
+    border: 1px solid rgba(0,87,255,0.3);
+    color: var(--electric);
+    padding: .4rem 1.2rem;
+    border-radius: 100px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100%{box-shadow:0 0 0 0 rgba(0,180,255,0.2)}
+    50%{box-shadow:0 0 0 8px rgba(0,180,255,0)}
+  }
+  .dot-live {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--electric2);
+    animation: blink 1.2s ease infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: .9;
+    letter-spacing: .02em;
+    margin-bottom: 1.5rem;
+    animation: heroIn .8s cubic-bezier(.2,0,.1,1) both;
+  }
+  @keyframes heroIn { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+  .hero-title span {
+    display: block;
+    background: linear-gradient(135deg, var(--text) 0%, var(--electric) 50%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-title .outline {
+    -webkit-text-stroke: 2px var(--electric);
+    -webkit-text-fill-color: transparent;
+    opacity: .5;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--text2);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    animation: heroIn .8s .15s cubic-bezier(.2,0,.1,1) both;
+  }
+
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: heroIn .8s .3s both; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--electric) 100%);
+    color: #fff;
+    border: none;
+    padding: .85rem 2.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    letter-spacing: .05em;
+    transition: all .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content:'';position:absolute;inset:0;
+    background:rgba(255,255,255,0);
+    transition:.25s;
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,87,255,0.5); }
+  .btn-primary:hover::after { background:rgba(255,255,255,0.08); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--electric);
+    border: 1.5px solid var(--electric);
+    padding: .85rem 2.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    letter-spacing: .05em;
+    transition: all .25s;
+  }
+  .btn-outline:hover {
+    background: rgba(0,180,255,0.08);
+    box-shadow: 0 0 20px rgba(0,180,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    flex-wrap: wrap; justify-content: center;
+    animation: heroIn .8s .45s both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem; font-weight: 700;
+    color: var(--electric);
+    line-height: 1;
+  }
+  .stat-label { font-size: .8rem; color: var(--text3); margin-top: .3rem; letter-spacing: .08em; text-transform: uppercase; }
+
+  /* EVENTS */
+  #events { padding: 100px 5%; }
+  .section-header { text-align: center; margin-bottom: 3.5rem; }
+  .section-tag {
+    display: inline-block;
+    color: var(--electric);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: .03em;
+    line-height: 1;
+  }
+  .section-sub { color: var(--text2); margin-top: .8rem; font-size: 1rem; }
+
+  /* FILTER TABS */
+  .filter-tabs {
+    display: flex; gap: .5rem; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 2.5rem;
+  }
+  .filter-tab {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: .5rem 1.4rem;
+    border-radius: 100px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .filter-tab:hover, .filter-tab.active {
+    background: linear-gradient(135deg, var(--blue), var(--electric));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(0,87,255,0.35);
+  }
+
+  /* EVENT CARDS GRID */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .event-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all .3s;
+    backdrop-filter: blur(10px);
+    position: relative;
+  }
+  .event-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--electric);
+    box-shadow: var(--glow), 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .card-img {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img-bg {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+    transition: transform .4s;
+  }
+  .event-card:hover .card-img-bg { transform: scale(1.08); }
+  .card-badge {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(0,87,255,0.9);
+    color: #fff;
+    padding: .25rem .7rem;
+    border-radius: 100px;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+  }
+  .card-badge.sold { background: rgba(255,60,60,0.9); }
+  .card-badge.few { background: rgba(255,150,0,0.9); }
+
+  .card-body { padding: 1.25rem; }
+  .card-genre {
+    font-size: .7rem; font-weight: 700; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--electric);
+    margin-bottom: .4rem;
+  }
+  .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; line-height: 1.3; }
+  .card-meta { display: flex; gap: 1rem; color: var(--text2); font-size: .82rem; flex-wrap: wrap; }
+  .card-meta span { display: flex; align-items: center; gap: .3rem; }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .card-price { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--electric); }
+  .card-price span { font-size: .7rem; color: var(--text3); font-family: 'Space Grotesk', sans-serif; font-weight: 400; display:block; }
+  .btn-buy {
+    background: linear-gradient(135deg, var(--blue), var(--electric));
+    color: #fff; border: none;
+    padding: .5rem 1.3rem;
+    border-radius: 8px;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all .2s;
+    letter-spacing: .04em;
+  }
+  .btn-buy:hover { box-shadow: 0 4px 20px rgba(0,87,255,0.5); transform:translateY(-1px); }
+
+  /* TICKET MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+    padding: 1rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%; max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(30px) scale(.97);
+    transition: transform .3s cubic-bezier(.2,0,.1,1);
+    position: relative;
+  }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+  .modal-header {
+    padding: 1.5rem 1.5rem 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .modal-close {
+    background: var(--surface2); border: 1px solid var(--border);
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text2);
+    font-size: 1.1rem; transition: all .2s; flex-shrink: 0;
+  }
+  .modal-close:hover { border-color: var(--electric); color: var(--electric); }
+  .modal-body { padding: 1.5rem; }
+  .modal-event-title { font-size: 1.5rem; font-weight: 700; margin-bottom: .4rem; }
+  .modal-event-sub { color: var(--text2); font-size: .9rem; margin-bottom: 1.5rem; }
+
+  .ticket-types { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
+  .ticket-type {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all .2s;
+  }
+  .ticket-type:hover, .ticket-type.selected {
+    border-color: var(--electric);
+    background: rgba(0,87,255,0.08);
+  }
+  .ticket-type-info { flex: 1; }
+  .ticket-type-name { font-weight: 700; margin-bottom: .2rem; }
+  .ticket-type-desc { font-size: .8rem; color: var(--text2); }
+  .ticket-type-price { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--electric); font-weight: 700; }
+  .ticket-qty { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+  .qty-label { font-weight: 600; }
+  .qty-controls { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+  .qty-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .qty-btn:hover { border-color: var(--electric); color: var(--electric); }
+  .qty-num { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; width: 30px; text-align: center; }
+
+  .order-summary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: .4rem; font-size: .9rem; color: var(--text2); }
+  .summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--text); padding-top: .6rem; border-top: 1px solid var(--border); margin-top: .4rem; }
+  .summary-total .price { color: var(--electric); font-family: 'Orbitron', sans-serif; }
+
+  .btn-checkout {
+    width: 100%;
+    background: linear-gradient(135deg, var(--blue), var(--electric));
+    color: #fff; border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: .05em;
+    transition: all .25s;
+  }
+  .btn-checkout:hover { box-shadow: 0 6px 30px rgba(0,87,255,0.5); transform: translateY(-2px); }
+
+  /* CHECKOUT FORM */
+  .checkout-step { display: none; }
+  .checkout-step.active { display: block; }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; color: var(--text2); }
+  .form-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--electric); box-shadow: 0 0 0 3px rgba(0,180,255,0.1); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+  /* SUCCESS */
+  .success-screen {
+    text-align: center; padding: 2rem;
+  }
+  .success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--electric));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin: 0 auto 1.5rem;
+    animation: successPop .5s cubic-bezier(.2,0,.1,1) both;
+  }
+  @keyframes successPop { from{transform:scale(0)} to{transform:scale(1)} }
+
+  /* FEATURES */
+  #features { padding: 100px 5%; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all .3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background: linear-gradient(90deg,transparent,var(--electric),transparent);
+    opacity:0;transition:.3s;
+  }
+  .feature-card:hover { border-color: var(--electric); transform:translateY(-4px); box-shadow: var(--glow); }
+  .feature-card:hover::before { opacity:1; }
+  .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .feature-title { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+  .feature-desc { font-size: .9rem; color: var(--text2); line-height: 1.6; }
+
+  /* FOOTER */
+  footer {
+    padding: 4rem 5% 2rem;
+    border-top: 1px solid var(--border);
+    position: relative; z-index: 1;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem; margin-bottom: 3rem;
+  }
+  @media(max-width:768px){ .footer-top{ grid-template-columns:1fr 1fr; } }
+  .footer-brand .logo { font-size: 1.2rem; }
+  .footer-desc { color: var(--text2); font-size: .9rem; line-height: 1.6; margin-top: .8rem; }
+  .footer-col h4 { font-size: .8rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--electric); margin-bottom: 1rem; }
+  .footer-col a { display: block; color: var(--text2); text-decoration: none; font-size: .9rem; margin-bottom: .5rem; transition: color .2s; cursor:pointer; }
+  .footer-col a:hover { color: var(--text); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .footer-copy { font-size: .85rem; color: var(--text3); }
+  .footer-badges { display: flex; gap: .75rem; }
+  .footer-badge {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: .3rem .8rem; border-radius: 6px;
+    font-size: .75rem; color: var(--text2); font-weight: 600;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+    background: var(--surface);
+    border: 1px solid var(--electric);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text);
+    box-shadow: var(--glow2);
+    transform: translateY(20px); opacity: 0;
+    transition: all .3s cubic-bezier(.2,0,.1,1);
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--blue2); border-radius: 3px; }
+
+  /* MOBILE */
+  @media(max-width:640px){
+    .nav-links{ display:none; }
+    .hero-stats{ gap:1.5rem; }
+    .form-row{ grid-template-columns:1fr; }
+  }
+</style>
 </head>
-<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden antialiased transition-colors duration-300">
+<body>
 
-<div class="relative flex min-h-screen w-full flex-col">
-    
-    <header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-border-dark bg-white/90 dark:bg-background-dark/95 backdrop-blur-xl px-4 md:px-6 py-4 lg:px-10">
-        <div class="flex items-center gap-4 lg:gap-8">
-            <div class="flex items-center gap-3 group cursor-pointer">
-                <div class="h-11 w-11 rounded-full border-2 border-primary/30 overflow-hidden bg-white flex items-center justify-center shadow-[0_0_15px_rgba(42,94,255,0.3)]">
-                    <img src="Screenshot 2026-02-24 at 16-07-26 NIGHT PASS - NIGHT PASS.pdf.png" 
-                         alt="Logo" 
-                         class="h-full w-full object-cover scale-110">
-                </div>
-                <h2 class="text-lg md:text-xl font-black uppercase tracking-tighter">NightPass</h2>
-            </div>
-                <div class="relative hidden sm:block max-w-xs w-full mx-4">
-    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-    <input 
-        type="text" 
-        id="search-input" 
-        placeholder="Cerca evento o locale..." 
-        class="w-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-full py-2 pl-10 pr-4 text-xs font-bold uppercase tracking-wider focus:outline-none focus:border-primary transition-all text-slate-900 dark:text-white"
-        onkeyup="filtraEventi()"
-    >
-</div>
-            <nav class="hidden items-center gap-8 lg:flex ml-4">
-                <a href="#" class="nav-home flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Home</a>
-                    <a href="#carousel-container" class="nav-events flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Eventi</a>
-                    <a href="#chi-siamo" class="nav-events flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">chi siamo</a>
-            </nav>
-        </div>
+<!-- BACKGROUNDS -->
+<div class="bg-mesh"></div>
+<div class="grid-overlay"></div>
 
-        <div class="flex flex-1 justify-end gap-3 items-center">
-            <div class="relative group">
-                <button class="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-surface-dark border border-transparent hover:border-primary transition-all">
-                    <img id="lang-flag" src="https://flagcdn.com/w40/it.png" class="w-5 h-3.5 object-cover rounded-sm">
-                    <span id="lang-label" class="text-xs font-bold uppercase">ITA</span>
-                </button>
-                <div class="dropdown-animate absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl p-1">
-                    <button onclick="updateLang('it')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
-                        <img src="https://flagcdn.com/w40/it.png" class="w-4 h-3"> ITA
-                    </button>
-                    <button onclick="updateLang('en')" class="flex items-center gap-3 w-full px-4 py-2 hover:bg-primary/10 rounded-lg text-sm font-bold transition-all">
-                        <img src="https://flagcdn.com/w40/gb.png" class="w-4 h-3"> ENG
-                    </button>
-                </div>
-            </div>
-            
-            <button onclick="toggleTheme()" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary transition-all">
-                <span id="theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
-            </button>
-
-            <div class="relative group lg:hidden">
-                <button class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
-                <div class="dropdown-animate absolute right-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl shadow-2xl p-2">
-                    <a href="#" class="nav-home flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Home</a>
-                    <a href="#carousel-container" class="nav-events flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">Eventi</a>
-                    <a href="#chi-siamo" class="nav-events flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 font-bold text-sm uppercase">chi siamo</a>
-                </div>
-            </div>
-
-            
-        </div>
-    </header>
-
-    <main class="flex-1">
-        <section class="mx-auto w-full max-w-[1400px] px-4 py-6">
-            <div class="relative flex min-h-[600px] flex-col justify-end overflow-hidden rounded-[2.5rem] bg-cover bg-center px-6 pb-12 pt-40 md:px-16 border border-slate-200 dark:border-border-dark shadow-2xl" 
-                 style='background-image: linear-gradient(to top, rgba(10, 10, 18, 0.9) 0%, rgba(10, 10, 18, 0.1) 100%), url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80");'>
-                <div class="relative z-10 max-w-4xl">
-                    <span class="badge-trending inline-flex items-center gap-2 rounded-full bg-accent/20 backdrop-blur-md px-4 py-1.5 text-xs font-black uppercase tracking-widest text-accent border border-accent/30 mb-6">
-                        <span class="w-2 h-2 rounded-full bg-accent animate-ping"></span> Trending Now
-                    </span>
-                    <h1 id="hero-title" class="mb-6 text-5xl font-black leading-[0.85] text-white md:text-8xl lg:text-9xl uppercase text-glow">
-                        Vivi la notte <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">Senza Limiti</span>
-                    </h1>
-                    <p id="hero-desc" class="mb-10 max-w-xl text-lg text-slate-300 font-medium leading-relaxed">
-                        Accedi ai migliori eventi, concerti e club esclusivi. NightPass è il tuo passpartout digitale per un divertimento senza confini.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="" id="hero-btn-1" class="flex items-center justify-center h-14 px-10 rounded-full bg-primary text-white font-black uppercase tracking-widest hover:bg-primary-dark transition-all shadow-xl shadow-primary/30">
-                         Acquista Biglietti
-                        </a>
-                         <a href="#eventi" id="hero-btn-2" class="flex items-center justify-center h-14 px-10 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 font-black uppercase tracking-widest hover:bg-white/20 transition-all">
-                               Scopri Eventi
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="eventi" class="py-12 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto overflow-hidden">
-            <div class="flex justify-between items-end mb-8">
-                <div>
-                    <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter">Discoteca</h3>
-                    <div class="h-1 w-20 bg-primary mt-2"></div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="scrollPrev()" class="h-10 w-10 rounded-full border border-slate-200 dark:border-border-dark flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-sm">chevron_left</span>
-                    </button>
-                    <button onclick="scrollNext()" class="h-10 w-10 rounded-full border border-slate-200 dark:border-border-dark flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-sm">chevron_right</span>
-                    </button>
-                </div>
-            </div>
-
-            <div id="carousel-container" 
-                 class="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth pb-4" 
-                 style="scrollbar-width: none; -ms-overflow-style: none;">
-                
-                <div class="snap-center shrink-0 w-[280px] md:w-[320px] group bg-white dark:bg-surface-dark rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-lg hover:border-primary transition-all">
-                    <div class="relative aspect-[4/5] overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase">Mer 25 Feb</div>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <h4 class="font-black text-base uppercase leading-tight line-clamp-2">HOT SPOT - Fine Sessione</h4>
-                        <p class="text-xs flex items-center gap-1 opacity-60 uppercase font-bold tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-primary">location_on</span> Discoteca Artè
-                        </p>
-                        <a href="acquista.html" class="block w-full py-3 bg-primary text-white hover:bg-primary-dark text-center text-xs font-black uppercase rounded-xl transition-all tracking-widest shadow-lg shadow-primary/20">
-                            Acquista
-                        </a>
-                    </div>
-                </div>
-                    <div class="snap-center shrink-0 w-[280px] md:w-[320px] group bg-white dark:bg-surface-dark rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-lg hover:border-primary transition-all">
-                    <div class="relative aspect-[4/5] overflow-hidden">
-                        <img src="fotoback.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase">Sab 28 Feb</div>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <h4 class="font-black text-base uppercase leading-tight line-clamp-2">Bresh - Opus Club</h4>
-                        <p class="text-xs flex items-center gap-1 opacity-60 uppercase font-bold tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-primary">location_on</span> Roma
-                        </p>
-                        <a href="acquista.html" class="block w-full py-3 bg-primary text-white hover:bg-primary-dark text-center text-xs font-black uppercase rounded-xl transition-all tracking-widest shadow-lg shadow-primary/20">
-                            Acquista
-                        </a>
-                    </div>
-                </div>
-                <div class="snap-center shrink-0 w-[280px] md:w-[320px] group bg-white dark:bg-surface-dark rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-lg hover:border-primary transition-all">
-                    <div class="relative aspect-[4/5] overflow-hidden">
-                        <img src="foto2.jpeg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase">Ven 27 Feb</div>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <h4 class="font-black text-base uppercase leading-tight line-clamp-2">Supermarket - Anni 90</h4>
-                        <p class="text-xs flex items-center gap-1 opacity-60 uppercase font-bold tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-primary">location_on</span> Madame Butterfly
-                        </p>
-                        <a href="acquista.html" class="block w-full py-3 bg-primary text-white hover:bg-primary-dark text-center text-xs font-black uppercase rounded-xl transition-all tracking-widest shadow-lg shadow-primary/20">
-                            Acquista
-                        </a>
-                    </div>
-                </div>
-                <div class="snap-center shrink-0 w-[280px] md:w-[320px] group bg-white dark:bg-surface-dark rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-lg hover:border-primary transition-all">
-                    <div class="relative aspect-[4/5] overflow-hidden">
-                        <img src="fotoback.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase">Sab 28 Feb</div>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <h4 class="font-black text-base uppercase leading-tight line-clamp-2">Bresh - Opus Club</h4>
-                        <p class="text-xs flex items-center gap-1 opacity-60 uppercase font-bold tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-primary">location_on</span> Roma
-                        </p>
-                        <a href="acquista.html" class="block w-full py-3 bg-primary text-white hover:bg-primary-dark text-center text-xs font-black uppercase rounded-xl transition-all tracking-widest shadow-lg shadow-primary/20">
-                            Acquista
-                        </a>
-                    </div>
-                </div>
-                <div class="snap-center shrink-0 w-[280px] md:w-[320px] group bg-white dark:bg-surface-dark rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-border-dark shadow-lg hover:border-primary transition-all">
-                    <div class="relative aspect-[4/5] overflow-hidden">
-                        <img src="fotoback.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase">Sab 28 Feb</div>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <h4 class="font-black text-base uppercase leading-tight line-clamp-2">Bresh - Opus Club</h4>
-                        <p class="text-xs flex items-center gap-1 opacity-60 uppercase font-bold tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-primary">location_on</span> Roma
-                        </p>
-                        <a href="acquista.html" class="block w-full py-3 bg-primary text-white hover:bg-primary-dark text-center text-xs font-black uppercase rounded-xl transition-all tracking-widest shadow-lg shadow-primary/20">
-                            Acquista
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div id="chi-siamo" class="py-24 px-6 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <div class="space-y-8">
-                <div>
-                    <h2 class="text-accent font-black uppercase tracking-[0.3em] text-sm mb-4">Chi Siamo</h2>
-                    <h3 id="about-title" class="text-4xl md:text-6xl font-black leading-tight uppercase">Il Futuro del <br/><span class="text-primary">Ticketing Digitale</span></h3>
-                </div>
-                <p id="about-desc" class="dark:text-text-secondary-dark text-slate-600 text-lg border-l-4 border-primary pl-6">Siamo una piattaforma all'avanguardia nata per semplificare la notte. Colmiamo il divario tra i fan e i club con tecnologia sicura e veloce.</p>
-                <div class="grid grid-cols-2 gap-8">
-                    <div class="p-6 rounded-3xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark">
-                        <h4 class="text-4xl font-black text-primary">5M+</h4>
-                        <p class="text-xs uppercase font-bold opacity-60">Biglietti Venduti</p>
-                    </div>
-                    <div class="p-6 rounded-3xl bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark">
-                        <h4 class="text-4xl font-black text-accent">12k+</h4>
-                        <p class="text-xs uppercase font-bold opacity-60">Eventi Gestiti</p>
-                    </div>
-                </div>
-            </div>
-            <div class="relative w-full flex justify-center items-center min-h-[450px] md:min-h-[550px]">
-    <div id="img-back" class="absolute transition-all duration-1000 ease-in-out z-10 translate-x-10 translate-y-10 opacity-40 grayscale">
-        <img src="foto1.jpeg" class="w-[280px] md:w-[350px] aspect-[3/4] object-cover rounded-[2.5rem] shadow-2xl" alt="Back">
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="scrollTo({top:0,behavior:'smooth'})">NIGHTPASS</div>
+  <div class="nav-links">
+    <a onclick="document.getElementById('events').scrollIntoView({behavior:'smooth'})" data-i18n="nav_events">Eventi</a>
+    <a onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" data-i18n="nav_features">Perché NightPass</a>
+    <a data-i18n="nav_app">App</a>
+    <a data-i18n="nav_contact">Contatti</a>
+  </div>
+  <div class="nav-controls">
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☾ Dark</button>
+    <div class="lang-selector">
+      <button class="lang-btn" onclick="toggleLangMenu()" id="langBtn">🌐 IT</button>
+      <div class="lang-dropdown" id="langMenu">
+        <button class="active" onclick="setLang('it')">🇮🇹 Italiano</button>
+        <button onclick="setLang('en')">🇬🇧 English</button>
+        <button onclick="setLang('es')">🇪🇸 Español</button>
+      </div>
     </div>
+  </div>
+</nav>
 
-    <div id="img-front" class="absolute transition-all duration-1000 ease-in-out z-20 translate-x-0 translate-y-0">
-        <img src="fotoback.jpg" class="w-[280px] md:w-[350px] aspect-[3/4] object-cover rounded-[2.5rem] shadow-2xl border-4 border-white/5" alt="Front">
-    </div>
-</div>
-        </div>
-<script>
-    function setupImageSwap() {
-        const front = document.getElementById('img-front');
-        const back = document.getElementById('img-back');
-        let state = true;
-
-        setInterval(() => {
-            if (state) {
-                // Sposta quella davanti DIETRO
-                front.style.zIndex = "10";
-                front.style.transform = "translate(40px, 40px)";
-                front.style.opacity = "0.4";
-                front.style.filter = "grayscale(100%)";
-
-                // Sposta quella dietro DAVANTI
-                back.style.zIndex = "20";
-                back.style.transform = "translate(0px, 0px)";
-                back.style.opacity = "1";
-                back.style.filter = "grayscale(0%)";
-            } else {
-                // Torna alla posizione originale
-                front.style.zIndex = "20";
-                front.style.transform = "translate(0px, 0px)";
-                front.style.opacity = "1";
-                front.style.filter = "grayscale(0%)";
-
-                back.style.zIndex = "10";
-                back.style.transform = "translate(40px, 40px)";
-                back.style.opacity = "0.4";
-                back.style.filter = "grayscale(100%)";
-            }
-            state = !state;
-        }, 5000);
-    }
-
-    document.addEventListener('DOMContentLoaded', setupImageSwap);
-</script>
-        <section class="py-24 bg-slate-100 dark:bg-surface-dark/30 border-y border-slate-200 dark:border-border-dark">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="flex justify-between items-end mb-16">
-                    <h3 class="text-3xl md:text-5xl font-black uppercase">Cosa Offriamo</h3>
-                    <span class="material-symbols-outlined text-primary text-4xl">keyboard_double_arrow_right</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="group rounded-[2rem] overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark transition-all hover:border-primary">
-                        <div class="h-64 overflow-hidden"><img class="h-full w-full object-cover group-hover:scale-110 transition-all duration-700" src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=600&q=80"></div>
-                        <div class="p-6 flex justify-between items-center"><h4 class="font-black uppercase tracking-widest text-sm">Concerti</h4> <span class="material-symbols-outlined text-primary">music_note</span></div>
-                    </div>
-                    <div class="group rounded-[2rem] overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark transition-all hover:border-accent">
-                        <div class="h-64 overflow-hidden"><img class="h-full w-full object-cover group-hover:scale-110 transition-all duration-700" src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80"></div>
-                        <div class="p-6 flex justify-between items-center"><h4 class="font-black uppercase tracking-widest text-sm">Nightlife</h4> <span class="material-symbols-outlined text-accent">nightlife</span></div>
-                    </div>
-                    <div class="group rounded-[2rem] overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark transition-all hover:border-primary">
-                        <div class="h-64 overflow-hidden"><img class="h-full w-full object-cover group-hover:scale-110 transition-all duration-700" src="image.png"></div>
-                        <div class="p-6 flex justify-between items-center"><h4 class="font-black uppercase tracking-widest text-sm">Teatro</h4> <span class="material-symbols-outlined text-primary">theater_comedy</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        
-        <section class="py-12 bg-white dark:bg-[#050505] transition-colors duration-300">
-    
-    <div class="max-w-7xl mx-auto px-6 mb-8">
-        <h2 class="text-3xl font-black uppercase italic dark:text-white tracking-tighter">
-            I Nostri <span class="text-[#00d2ff]" style="text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);">Staff</span>
-        </h2>
-    </div>
-
-    <style>
-        .carousel-viewport {
-            width: 100%;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding-bottom: 40px;
-            scroll-behavior: smooth;
-        }
-
-        .carousel-viewport::-webkit-scrollbar { display: none; }
-
-        .carousel-track {
-            display: flex;
-            gap: 20px;
-            padding: 0 40px;
-            width: max-content;
-        }
-
-        /* BOX QUADRATO */
-        .event-card {
-            flex: 0 0 300px; /* Larghezza fissa */
-            height: 300px;    /* Altezza uguale alla larghezza */
-            scroll-snap-align: center;
-            border-radius: 1.2rem;
-            overflow: hidden;
-            position: relative;
-            background: #111;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .event-card:hover {
-            transform: scale(1.03);
-            border-color: #00d2ff;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
-        }
-
-        .event-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Perfetto per la tua foto Fuego */
-            transition: transform 0.6s ease;
-        }
-
-        .event-card:hover img {
-            transform: scale(1.1);
-        }
-
-        /* Overlay più sottile per i quadrati */
-        .card-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 20px;
-            background: linear-gradient(to top, 
-                rgba(0,0,0,0.85) 0%, 
-                rgba(0,0,0,0.2) 50%, 
-                transparent 100%);
-            color: white;
-        }
-
-        .card-date { 
-            font-size: 0.7rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            color: #00d2ff; 
-            font-weight: 800;
-        }
-
-        .card-title { 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-size: 1.3rem; 
-            margin-top: 2px;
-        }
-    </style>
-
-    <div class="carousel-viewport" id="nightCarousel">
-        <div class="carousel-track">
-            
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Fuego">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Anna">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Niky Savage">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Club">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-             <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Anna">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-                 <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Anna">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Niky Savage">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Club">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Niky Savage">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <img src="fuegoo.jpeg" alt="Club">
-                <div class="card-overlay">
-                    <div class="card-date">STAFF</div>
-                    <h3 class="card-title">Fuego</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-    const carousel = document.getElementById('nightCarousel');
-    let isPaused = false;
-    let scrollPos = 0;
-
-    function step() {
-        if (!isPaused) {
-            // Velocità: aumenta lo 0.5 per andare più veloce, diminuisci per più lento
-            scrollPos += 0.8; 
-            
-            const maxScroll = carousel.scrollWidth - carousel.offsetWidth;
-
-            // Se arriva alla fine, ricomincia da zero
-            if (scrollPos >= maxScroll) {
-                scrollPos = 0;
-            }
-            
-            carousel.scrollLeft = scrollPos;
-        }
-        // Crea il ciclo infinito fluido a 60fps
-        requestAnimationFrame(step);
-    }
-
-    // Gestione pausa
-    carousel.addEventListener('mouseenter', () => isPaused = true);
-    carousel.addEventListener('mouseleave', () => isPaused = false);
-    carousel.addEventListener('touchstart', () => isPaused = true);
-    carousel.addEventListener('touchend', () => isPaused = false);
-
-    // Avvia l'animazione
-    requestAnimationFrame(step);
-</script>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge"><span class="dot-live"></span><span data-i18n="hero_badge">Prevendite Live Ora</span></div>
+  <h1 class="hero-title">
+    <span>VIVI LA</span>
+    <span class="outline">NOTTE</span>
+  </h1>
+  <p class="hero-sub" data-i18n="hero_sub">La piattaforma italiana per le prevendite di eventi, concerti, club e festival. Acquista il tuo biglietto in pochi secondi.</p>
+  <div class="hero-ctas">
+    <button class="btn-primary" onclick="document.getElementById('events').scrollIntoView({behavior:'smooth'})" data-i18n="hero_cta1">Scopri gli eventi →</button>
+    <button class="btn-outline" data-i18n="hero_cta2">Scarica l'app</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">120K+</div><div class="stat-label" data-i18n="stat1">Biglietti venduti</div></div>
+    <div class="stat"><div class="stat-num">850+</div><div class="stat-label" data-i18n="stat2">Eventi attivi</div></div>
+    <div class="stat"><div class="stat-num">98%</div><div class="stat-label" data-i18n="stat3">Soddisfazione</div></div>
+    <div class="stat"><div class="stat-num">60+</div><div class="stat-label" data-i18n="stat4">Città coperte</div></div>
+  </div>
 </section>
-        
-        <section class="py-24 max-w-7xl mx-auto px-6">
-            <div class="rounded-[3rem] bg-gradient-to-br from-slate-200 to-white dark:from-surface-dark dark:to-background-dark p-8 md:p-20 flex flex-col lg:flex-row items-center gap-16 border border-slate-200 dark:border-border-dark shadow-3xl">
-                <div class="flex-1 space-y-8">
-                    <h3 class="text-4xl md:text-6xl font-black uppercase leading-none">Sicurezza <br/><span class="text-primary">Istantanea</span></h3>
-                    <p class="text-lg opacity-70">Il tuo biglietto è un codice QR criptato e lo trovi sull'APP. Niente attese.</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4 font-bold"><span class="material-symbols-outlined text-green-500">check_circle</span> 100% Checkout Sicuro</div>
-                        <div class="flex items-center gap-4 font-bold"><span class="material-symbols-outlined text-primary">bolt</span> Consegna in pochi secondi</div>
-                    </div>
-                </div>
-                <div class="relative w-full max-w-xs">
-                    <div class="absolute inset-0 bg-primary/20 blur-[100px] rounded-full"></div>
-                    <div class="relative bg-slate-900 text-white rounded-[2rem] p-8 border border-white/10 shadow-2xl">
-                        <div class="flex justify-between mb-10"><span class="font-black italic">NightPass</span> <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded">ATTIVO</span></div>
-                        <div class="bg-white p-4 rounded-2xl mb-6 flex justify-center"><span class="material-symbols-outlined text-black text-8xl">qr_code_2</span></div>
-                        <h4 class="text-xl font-black mb-1">Summer Vibe Festival</h4>
-                        <p class="text-xs opacity-50 mb-6">VIP ENTRY • MILANO</p>
-                        <button class="w-full py-4 bg-white text-black font-black rounded-xl text-xs uppercase">Aggiungi a Apple Wallet</button>
-                    </div>
-                </div>
-            </div>
-        <style>
-    .carousel-wrapper {
-        display: flex;
-        overflow-x: hidden;
-        white-space: nowrap;
-        width: 100%;
-        padding: 20px 0;
-    }
 
-    .review-card-neon {
-        flex: 0 0 300px;
-        margin: 0 15px;
-        padding: 28px;
-        background: rgba(255, 255, 255, 0.05); /* Vetro chiaro per Light Mode */
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        border-top: 3px solid #2a5eff;
-        border-radius: 24px;
-        white-space: normal; /* Fa andare il testo a capo */
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+<!-- EVENTS -->
+<section id="events">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="events_tag">Prevendite</div>
+    <h2 class="section-title" data-i18n="events_title">EVENTI IN ARRIVO</h2>
+    <p class="section-sub" data-i18n="events_sub">Scegli il tuo evento e acquista subito il biglietto</p>
+  </div>
 
-    /* Versione Dark Mode */
-    .dark .review-card-neon {
-        background: rgba(21, 21, 32, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top: 3px solid #2a5eff;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    }
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterEvents('all',this)" data-i18n="filter_all">Tutti</button>
+    <button class="filter-tab" onclick="filterEvents('club',this)" data-i18n="filter_club">Club</button>
+    <button class="filter-tab" onclick="filterEvents('concert',this)" data-i18n="filter_concert">Concerti</button>
+    <button class="filter-tab" onclick="filterEvents('festival',this)" data-i18n="filter_festival">Festival</button>
+    <button class="filter-tab" onclick="filterEvents('electronic',this)" data-i18n="filter_electronic">Elettronica</button>
+  </div>
 
-    .review-card-neon:hover {
-        transform: translateY(-8px);
-        border-top-color: #00f0ff;
-        box-shadow: 0 20px 40px rgba(42, 94, 255, 0.15);
-    }
-</style>
-
-<section id="reviews" class="py-20 bg-white dark:bg-background-dark overflow-hidden">
-    <div class="max-w-7xl mx-auto px-6 mb-10">
-        <h2 class="text-xs font-black uppercase tracking-[0.4em] text-primary mb-2">Feedback</h2>
-        <p class="text-3xl font-black uppercase tracking-tighter">Cosa dicono di noi</p>
-    </div>
-
-    <div class="carousel-wrapper carousel-reviews">
-        <div class="review-card-neon">
-            <div class="flex items-center gap-1 mb-4 text-accent">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-            </div>
-            <p class="text-sm leading-relaxed font-medium mb-6 opacity-80">
-                "L'unica app che non si blocca quando cerchi di entrare nel locale. I biglietti sono istantanei."
-            </p>
-            <div class="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-[10px] font-black text-white">MV</div>
-                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Marco Valeri</span>
-            </div>
-        </div>
-<div class="review-card-neon">
-            <div class="flex items-center gap-1 mb-4 text-accent">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-            </div>
-            <p class="text-sm leading-relaxed font-medium mb-6 opacity-80">
-                "QR code sempre pronti anche offline. Mi ha salvato la serata in un locale senza campo."
-            </p>
-            <div class="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-[10px] font-black text-white">LB</div>
-                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Luca Bianchi</span>
-            </div>
-        </div>
-        <div class="review-card-neon">
-            <div class="flex items-center gap-1 mb-4 text-accent">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-            </div>
-            <p class="text-sm leading-relaxed font-medium mb-6 opacity-80">
-                "Design spaziale e facilità d'uso imbattibile. Finalmente un servizio serio per la nightlife."
-            </p>
-            <div class="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-primary flex items-center justify-center text-[10px] font-black text-white">GR</div>
-                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Giulia Rosso</span>
-            </div>
-        </div>
-<div class="review-card-neon">
-            <div class="flex items-center gap-1 mb-4 text-accent">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-            </div>
-            <p class="text-sm leading-relaxed font-medium mb-6 opacity-80">
-                "QR code sempre pronti anche offline. Mi ha salvato la serata in un locale senza campo."
-            </p>
-            <div class="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-[10px] font-black text-white">LB</div>
-                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Luca Bianchi</span>
-            </div>
-        </div>
-        <div class="review-card-neon">
-            <div class="flex items-center gap-1 mb-4 text-accent">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-            </div>
-            <p class="text-sm leading-relaxed font-medium mb-6 opacity-80">
-                "QR code sempre pronti anche offline. Mi ha salvato la serata in un locale senza campo."
-            </p>
-            <div class="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-[10px] font-black text-white">LB</div>
-                <span class="text-[10px] font-black uppercase tracking-widest opacity-60">Luca Bianchi</span>
-            </div>
-        </div>
-    </div>
+  <div class="events-grid" id="eventsGrid"></div>
 </section>
-        <section class="py-24 max-w-7xl mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-16">
-                <div>
-                    <h3 class="text-4xl font-black uppercase mb-6">Contattaci</h3>
-                    <p class="opacity-70 mb-10">Hai un locale? Vuoi vendere i tuoi biglietti su NightPass? Scrivici ora.</p>
-                    <div class="flex gap-4">
-                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white"><span class="material-symbols-outlined">mail</span></div>
-                        <div><p class="font-bold">Email</p><p class="opacity-60">info@nightpass.com</p></div>
-                    </div>
-                </div>
-                <form class="bg-white dark:bg-surface-dark p-8 rounded-[2rem] border border-slate-200 dark:border-border-dark space-y-4 shadow-xl">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input class="w-full bg-slate-50 dark:bg-background-dark border-none rounded-xl p-4 text-sm" placeholder="Nome">
-                        <input class="w-full bg-slate-50 dark:bg-background-dark border-none rounded-xl p-4 text-sm" placeholder="Email">
-                    </div>
-                    <textarea class="w-full bg-slate-50 dark:bg-background-dark border-none rounded-xl p-4 text-sm h-32" placeholder="Messaggio"></textarea>
-                    <button class="w-full py-4 bg-primary text-white font-black rounded-xl uppercase tracking-widest transition-all hover:scale-[1.02]">Invia Messaggio</button>
-                </form>
-            </div>
-        </section>
-    </main>
 
-   <style>
-    /* Animazione sfarfallio (flicker) */
-    @keyframes neon-flicker {
-        0%, 18%, 22%, 25%, 53%, 57%, 100% {
-            filter: drop-shadow(0 0 5px #00d2ff) drop-shadow(0 0 15px #00d2ff);
-            opacity: 1;
-        }
-        20%, 24%, 55% {
-            filter: none;
-            opacity: 0.5;
-        }
-    }
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="feat_tag">Perché sceglierci</div>
+    <h2 class="section-title" data-i18n="feat_title">NIGHTPASS È DIVERSO</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title" data-i18n="f1t">Acquisto in 10 secondi</div><div class="feature-desc" data-i18n="f1d">Nessuna attesa, nessun coda. Compra il tuo biglietto in meno di 10 secondi con la nostra app.</div></div>
+    <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-title" data-i18n="f2t">100% Sicuro</div><div class="feature-desc" data-i18n="f2d">Pagamenti crittografati, biglietti digitali anti-contraffazione con QR code univoco.</div></div>
+    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title" data-i18n="f3t">Sempre con te</div><div class="feature-desc" data-i18n="f3d">Il biglietto è nel tuo smartphone. Nessuna stampa, nessun rischio di perdita.</div></div>
+    <div class="feature-card"><div class="feature-icon">💙</div><div class="feature-title" data-i18n="f4t">Supporto 24/7</div><div class="feature-desc" data-i18n="f4d">Il nostro team è sempre disponibile per aiutarti prima, durante e dopo l'evento.</div></div>
+    <div class="feature-card"><div class="feature-icon">🎟️</div><div class="feature-title" data-i18n="f5t">Biglietti Nominativi</div><div class="feature-desc" data-i18n="f5d">I tuoi biglietti sono al sicuro: solo tu puoi accedere all'evento con il tuo documento.</div></div>
+    <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title" data-i18n="f6t">Multilingua</div><div class="feature-desc" data-i18n="f6d">Disponibile in italiano, inglese e spagnolo. Per vivere la notte senza frontiere.</div></div>
+  </div>
+</section>
 
-    /* Animazione pulsante per il testo */
-    @keyframes neon-pulse {
-        0% { text-shadow: 0 0 5px #00d2ff, 0 0 10px #00d2ff; opacity: 0.7; }
-        100% { text-shadow: 0 0 15px #00d2ff, 0 0 25px #00d2ff; opacity: 1; }
-    }
-
-    /* Applicazione sfarfallio ai loghi in hover */
-    .neon-logo:hover {
-        animation: neon-flicker 1.5s infinite;
-        transform: scale(1.15);
-        fill: #00d2ff !important;
-    }
-
-    /* Glow del footer */
-    .footer-neon-border {
-        box-shadow: 0 -5px 25px -10px rgba(0, 210, 255, 0.4);
-        border-top: 1px solid rgba(0, 210, 255, 0.3);
-    }
-</style>
-
-<footer class="py-12 bg-white dark:bg-[#050505] footer-neon-border">
-    <div class="max-w-7xl mx-auto px-6 flex flex-col items-center gap-8">
-        
-        <div class="flex items-center gap-8">
-            
-            <a href="#" class="group transition-all duration-300">
-                <svg class="w-7 h-7 fill-slate-400 neon-logo transition-all duration-300" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204 0.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-            </a>
-            
-            <a href="#" class="group transition-all duration-300">
-                <svg class="w-7 h-7 fill-slate-400 neon-logo transition-all duration-300" viewBox="0 0 24 24">
-                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.31a6.43 6.43 0 0 1-1.12-.75v7.22c0 1.25-.19 2.51-.71 3.64-.52 1.13-1.32 2.12-2.3 2.87-1.36 1.05-3.13 1.62-4.85 1.56-1.73-.06-3.41-.74-4.66-1.92-1.25-1.18-2-2.82-2.07-4.55-.07-1.74.52-3.47 1.65-4.8a6.93 6.93 0 0 1 4.31-2.45v4.02c-.8.15-1.57.51-2.14 1.11-.57.6-.9 1.41-.9 2.24 0 .83.33 1.64.9 2.24s1.34.96 2.14 1.11c.8.15 1.64.04 2.37-.32.73-.36 1.3-.98 1.62-1.73.32-.75.43-1.59.32-2.41V0h.01z"/>
-                </svg>
-            </a>
-            
-            <a href="#" class="group transition-all duration-300">
-                <svg class="w-7 h-7 fill-slate-400 neon-logo transition-all duration-300" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-            </a>
-        </div>
-
-        <div class="text-center text-[10px] font-black uppercase tracking-[0.3em] text-[#00d2ff]" 
-             style="animation: neon-pulse 2s infinite alternate;">
-            © 2026 NightPass • The Future of Party
-        </div>
-        
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo">NIGHTPASS</div>
+      <p class="footer-desc" data-i18n="footer_desc">La tua piattaforma per le prevendite di eventi. Musica, club, festival e molto altro.</p>
     </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_events">Eventi</h4>
+      <a data-i18n="fc_club">Club & Discoteche</a>
+      <a data-i18n="fc_concerts">Concerti</a>
+      <a data-i18n="fc_festival">Festival</a>
+      <a data-i18n="fc_special">Serate Speciali</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_info">Info</h4>
+      <a data-i18n="fc_howit">Come funziona</a>
+      <a data-i18n="fc_organizer">Sei un organizzatore?</a>
+      <a data-i18n="fc_faq">FAQ</a>
+      <a data-i18n="fc_contact">Contatti</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_legal">Legale</h4>
+      <a data-i18n="fc_privacy">Privacy Policy</a>
+      <a data-i18n="fc_terms">Termini di Servizio</a>
+      <a data-i18n="fc_cookies">Cookie Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy" data-i18n="footer_copy">© 2025 NightPass. Tutti i diritti riservati.</span>
+    <div class="footer-badges">
+      <span class="footer-badge">🔒 SSL</span>
+      <span class="footer-badge">✓ Pagamenti sicuri</span>
+    </div>
+  </div>
 </footer>
-    
+
+<!-- TICKET MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div id="step1" class="checkout-step active">
+      <div class="modal-header">
+        <div>
+          <div class="modal-event-title" id="modalTitle"></div>
+          <div class="modal-event-sub" id="modalSub"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--electric);margin-bottom:1rem;" data-i18n="sel_ticket">Seleziona Biglietto</p>
+        <div class="ticket-types" id="ticketTypes"></div>
+        <div class="ticket-qty">
+          <span class="qty-label" data-i18n="qty">Quantità</span>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-num" id="qtyNum">1</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="order-summary">
+          <div class="summary-row"><span data-i18n="subtotal">Subtotale</span><span id="summarySubtotal">€0.00</span></div>
+          <div class="summary-row"><span data-i18n="fees">Diritti di prevendita</span><span id="summaryFees">€0.00</span></div>
+          <div class="summary-total"><span data-i18n="total">Totale</span><span class="price" id="summaryTotal">€0.00</span></div>
+        </div>
+        <button class="btn-checkout" onclick="goToCheckout()" data-i18n="proceed">Procedi all'acquisto →</button>
+      </div>
+    </div>
+
+    <div id="step2" class="checkout-step">
+      <div class="modal-header">
+        <div><div class="modal-event-title" data-i18n="your_data">I tuoi dati</div></div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="fname">Nome</label>
+            <input class="form-input" type="text" id="fname" placeholder="Mario">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="lname">Cognome</label>
+            <input class="form-input" type="text" id="lname" placeholder="Rossi">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="email" placeholder="mario@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="phone">Telefono</label>
+          <input class="form-input" type="tel" id="phone" placeholder="+39 333 000 0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="card">Numero Carta</label>
+          <input class="form-input" type="text" id="card" placeholder="4242 4242 4242 4242" maxlength="19">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="expiry">Scadenza</label>
+            <input class="form-input" type="text" id="expiry" placeholder="MM/AA" maxlength="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input class="form-input" type="text" id="cvv" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <button class="btn-checkout" onclick="completeOrder()" data-i18n="confirm_pay">Conferma e Paga →</button>
+        <button class="btn-outline" style="width:100%;margin-top:.75rem" onclick="goBack()" data-i18n="go_back">← Torna indietro</button>
+      </div>
+    </div>
+
+    <div id="step3" class="checkout-step">
+      <div class="modal-body">
+        <div class="success-screen">
+          <div class="success-icon">✓</div>
+          <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:.5rem" data-i18n="success_title">Acquisto Completato!</h2>
+          <p style="color:var(--text2);margin-bottom:1.5rem" data-i18n="success_sub">Il tuo biglietto è stato inviato via email. Controlla la tua casella di posta.</p>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;font-family:'Orbitron',sans-serif;">
+            <div style="font-size:.7rem;color:var(--text3);margin-bottom:.3rem">NIGHTPASS ID</div>
+            <div style="font-size:1.1rem;color:var(--electric)" id="ticketId"></div>
+          </div>
+          <button class="btn-checkout" onclick="closeModal()" data-i18n="close_modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-    // Traduzioni e Tema (invariati)
-    const translations = {
-        it: {
-            title: "Vivi la notte <br/><span class='text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary'>Senza Limiti</span>",
-            desc: "Accedi ai migliori eventi, concerti e club esclusivi. NightPass è il tuo passpartout digitale per un divertimento senza confini.",
-            btn1: "Acquista Biglietti", btn2: "Scopri Eventi", nav1: "Home", nav2: "Eventi", nav3: "Locali", login: "Accedi"
-        },
-        en: {
-            title: "Live the night <br/><span class='text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary'>No Limits</span>",
-            desc: "Access the best events, concerts and exclusive clubs. NightPass is your digital passport for borderless fun.",
-            btn1: "Get Tickets", btn2: "Explore Events", nav1: "Home", nav2: "Events", nav3: "Venues", login: "Login"
-        }
-    };
+// ========== TRANSLATIONS ==========
+const i18n = {
+  it: {
+    nav_events:"Eventi", nav_features:"Perché NightPass", nav_app:"App", nav_contact:"Contatti",
+    hero_badge:"Prevendite Live Ora", hero_sub:"La piattaforma italiana per le prevendite di eventi, concerti, club e festival. Acquista il tuo biglietto in pochi secondi.",
+    hero_cta1:"Scopri gli eventi →", hero_cta2:"Scarica l'app",
+    stat1:"Biglietti venduti", stat2:"Eventi attivi", stat3:"Soddisfazione", stat4:"Città coperte",
+    events_tag:"Prevendite", events_title:"EVENTI IN ARRIVO", events_sub:"Scegli il tuo evento e acquista subito il biglietto",
+    filter_all:"Tutti", filter_club:"Club", filter_concert:"Concerti", filter_festival:"Festival", filter_electronic:"Elettronica",
+    feat_tag:"Perché sceglierci", feat_title:"NIGHTPASS È DIVERSO",
+    f1t:"Acquisto in 10 secondi", f1d:"Nessuna attesa, nessun coda. Compra il tuo biglietto in meno di 10 secondi con la nostra app.",
+    f2t:"100% Sicuro", f2d:"Pagamenti crittografati, biglietti digitali anti-contraffazione con QR code univoco.",
+    f3t:"Sempre con te", f3d:"Il biglietto è nel tuo smartphone. Nessuna stampa, nessun rischio di perdita.",
+    f4t:"Supporto 24/7", f4d:"Il nostro team è sempre disponibile per aiutarti prima, durante e dopo l'evento.",
+    f5t:"Biglietti Nominativi", f5d:"I tuoi biglietti sono al sicuro: solo tu puoi accedere all'evento con il tuo documento.",
+    f6t:"Multilingua", f6d:"Disponibile in italiano, inglese e spagnolo. Per vivere la notte senza frontiere.",
+    footer_desc:"La tua piattaforma per le prevendite di eventi. Musica, club, festival e molto altro.",
+    footer_events:"Eventi", footer_info:"Info", footer_legal:"Legale",
+    fc_club:"Club & Discoteche", fc_concerts:"Concerti", fc_festival:"Festival", fc_special:"Serate Speciali",
+    fc_howit:"Come funziona", fc_organizer:"Sei un organizzatore?", fc_faq:"FAQ", fc_contact:"Contatti",
+    fc_privacy:"Privacy Policy", fc_terms:"Termini di Servizio", fc_cookies:"Cookie Policy",
+    footer_copy:"© 2025 NightPass. Tutti i diritti riservati.",
+    sel_ticket:"Seleziona Biglietto", qty:"Quantità", subtotal:"Subtotale", fees:"Diritti di prevendita", total:"Totale",
+    proceed:"Procedi all'acquisto →", your_data:"I tuoi dati", fname:"Nome", lname:"Cognome", phone:"Telefono",
+    card:"Numero Carta", expiry:"Scadenza", confirm_pay:"Conferma e Paga →", go_back:"← Torna indietro",
+    success_title:"Acquisto Completato!", success_sub:"Il tuo biglietto è stato inviato via email. Controlla la tua casella di posta.",
+    close_modal:"Chiudi"
+  },
+  en: {
+    nav_events:"Events", nav_features:"Why NightPass", nav_app:"App", nav_contact:"Contact",
+    hero_badge:"Live Presales Now", hero_sub:"The Italian platform for event presales, concerts, clubs and festivals. Buy your ticket in seconds.",
+    hero_cta1:"Discover events →", hero_cta2:"Download the app",
+    stat1:"Tickets sold", stat2:"Active events", stat3:"Satisfaction", stat4:"Cities covered",
+    events_tag:"Presales", events_title:"UPCOMING EVENTS", events_sub:"Choose your event and buy your ticket now",
+    filter_all:"All", filter_club:"Club", filter_concert:"Concerts", filter_festival:"Festival", filter_electronic:"Electronic",
+    feat_tag:"Why choose us", feat_title:"NIGHTPASS IS DIFFERENT",
+    f1t:"Buy in 10 seconds", f1d:"No waiting, no queues. Buy your ticket in less than 10 seconds with our app.",
+    f2t:"100% Secure", f2d:"Encrypted payments, anti-counterfeiting digital tickets with unique QR code.",
+    f3t:"Always with you", f3d:"Your ticket is in your smartphone. No printing, no risk of loss.",
+    f4t:"24/7 Support", f4d:"Our team is always available to help you before, during and after the event.",
+    f5t:"Named Tickets", f5d:"Your tickets are safe: only you can access the event with your ID.",
+    f6t:"Multilingual", f6d:"Available in Italian, English and Spanish. To experience the night without borders.",
+    footer_desc:"Your platform for event presales. Music, clubs, festivals and much more.",
+    footer_events:"Events", footer_info:"Info", footer_legal:"Legal",
+    fc_club:"Clubs & Discos", fc_concerts:"Concerts", fc_festival:"Festivals", fc_special:"Special Nights",
+    fc_howit:"How it works", fc_organizer:"Are you an organizer?", fc_faq:"FAQ", fc_contact:"Contact",
+    fc_privacy:"Privacy Policy", fc_terms:"Terms of Service", fc_cookies:"Cookie Policy",
+    footer_copy:"© 2025 NightPass. All rights reserved.",
+    sel_ticket:"Select Ticket", qty:"Quantity", subtotal:"Subtotal", fees:"Service fees", total:"Total",
+    proceed:"Proceed to purchase →", your_data:"Your details", fname:"First Name", lname:"Last Name", phone:"Phone",
+    card:"Card Number", expiry:"Expiry", confirm_pay:"Confirm & Pay →", go_back:"← Go back",
+    success_title:"Purchase Complete!", success_sub:"Your ticket has been sent by email. Check your inbox.",
+    close_modal:"Close"
+  },
+  es: {
+    nav_events:"Eventos", nav_features:"Por qué NightPass", nav_app:"App", nav_contact:"Contacto",
+    hero_badge:"Preventa en Vivo", hero_sub:"La plataforma italiana para preventa de eventos, conciertos, clubs y festivales. Compra tu entrada en segundos.",
+    hero_cta1:"Descubrir eventos →", hero_cta2:"Descargar la app",
+    stat1:"Entradas vendidas", stat2:"Eventos activos", stat3:"Satisfacción", stat4:"Ciudades cubiertas",
+    events_tag:"Preventa", events_title:"PRÓXIMOS EVENTOS", events_sub:"Elige tu evento y compra tu entrada ahora",
+    filter_all:"Todos", filter_club:"Club", filter_concert:"Conciertos", filter_festival:"Festival", filter_electronic:"Electrónica",
+    feat_tag:"Por qué elegirnos", feat_title:"NIGHTPASS ES DIFERENTE",
+    f1t:"Compra en 10 segundos", f1d:"Sin esperas, sin colas. Compra tu entrada en menos de 10 segundos.",
+    f2t:"100% Seguro", f2d:"Pagos cifrados, entradas digitales antifalsiifcación con código QR único.",
+    f3t:"Siempre contigo", f3d:"La entrada está en tu smartphone. Sin impresión, sin riesgo de pérdida.",
+    f4t:"Soporte 24/7", f4d:"Nuestro equipo está siempre disponible para ayudarte antes, durante y después del evento.",
+    f5t:"Entradas Nominativas", f5d:"Tus entradas están seguras: solo tú puedes acceder al evento con tu documento.",
+    f6t:"Multilingüe", f6d:"Disponible en italiano, inglés y español. Para vivir la noche sin fronteras.",
+    footer_desc:"Tu plataforma para preventa de eventos. Música, clubs, festivales y mucho más.",
+    footer_events:"Eventos", footer_info:"Info", footer_legal:"Legal",
+    fc_club:"Clubs & Discotecas", fc_concerts:"Conciertos", fc_festival:"Festivales", fc_special:"Noches Especiales",
+    fc_howit:"Cómo funciona", fc_organizer:"¿Eres organizador?", fc_faq:"FAQ", fc_contact:"Contacto",
+    fc_privacy:"Política de Privacidad", fc_terms:"Términos de Servicio", fc_cookies:"Política de Cookies",
+    footer_copy:"© 2025 NightPass. Todos los derechos reservados.",
+    sel_ticket:"Seleccionar Entrada", qty:"Cantidad", subtotal:"Subtotal", fees:"Cargos por servicio", total:"Total",
+    proceed:"Proceder a la compra →", your_data:"Tus datos", fname:"Nombre", lname:"Apellido", phone:"Teléfono",
+    card:"Número de Tarjeta", expiry:"Vencimiento", confirm_pay:"Confirmar y Pagar →", go_back:"← Volver",
+    success_title:"¡Compra Completada!", success_sub:"Tu entrada ha sido enviada por correo. Revisa tu bandeja de entrada.",
+    close_modal:"Cerrar"
+  }
+};
+let currentLang = 'it';
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (i18n[lang][key]) el.textContent = i18n[lang][key];
+  });
+  const labels = {it:'🌐 IT', en:'🌐 EN', es:'🌐 ES'};
+  document.getElementById('langBtn').textContent = labels[lang];
+  document.querySelectorAll('.lang-dropdown button').forEach((b,i) => {
+    b.classList.toggle('active', ['it','en','es'][i] === lang);
+  });
+  document.getElementById('langMenu').classList.remove('open');
+  renderEvents(currentFilter);
+}
+function toggleLangMenu() {
+  document.getElementById('langMenu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lang-selector')) document.getElementById('langMenu').classList.remove('open');
+});
 
-    function updateLang(lang) {
-        const flag = document.getElementById('lang-flag');
-        const label = document.getElementById('lang-label');
-        flag.src = lang === 'it' ? "https://flagcdn.com/w40/it.png" : "https://flagcdn.com/w40/gb.png";
-        label.innerText = lang.toUpperCase();
-        document.getElementById('hero-title').innerHTML = translations[lang].title;
-        document.getElementById('hero-desc').innerText = translations[lang].desc;
-        document.getElementById('hero-btn-1').innerText = translations[lang].btn1;
-        document.getElementById('hero-btn-2').innerText = translations[lang].btn2;
-        document.querySelectorAll('.nav-home').forEach(el => el.innerText = translations[lang].nav1);
-        document.querySelectorAll('.nav-events').forEach(el => el.innerText = translations[lang].nav2);
-        document.querySelectorAll('.nav-venues').forEach(el => el.innerText = translations[lang].nav3);
-        document.querySelectorAll('.btn-login').forEach(el => el.innerText = translations[lang].login);
-    }
+// ========== THEME ==========
+let isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light-mode', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '☾ Dark' : '☀ Light';
+}
 
-    function toggleTheme() {
-        const html = document.documentElement;
-        const icon = document.getElementById('theme-icon');
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            icon.innerText = 'light_mode';
-        } else {
-            html.classList.add('dark');
-            icon.innerText = 'dark_mode';
-        }
-    }
+// ========== EVENTS DATA ==========
+const eventsData = [
+  { id:1, cat:'club', emoji:'🌌', gradient:'linear-gradient(135deg,#020a1f,#0057ff)', name:{it:"NEON DISTRICT",en:"NEON DISTRICT",es:"NEON DISTRICT"}, loc:{it:"Cocoricò, Riccione",en:"Cocoricò, Riccione",es:"Cocoricò, Riccione"}, date:"Sab 12 Lug 2025", time:"23:00", badge:"available", tickets:[{name:{it:"Ingresso Standard",en:"Standard Entry",es:"Entrada Estándar"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:18},{name:{it:"VIP Table",en:"VIP Table",es:"Mesa VIP"},desc:{it:"Tavolo riservato + bottiglia",en:"Reserved table + bottle",es:"Mesa reservada + botella"},price:85}] },
+  { id:2, cat:'concert', emoji:'🎸', gradient:'linear-gradient(135deg,#0a0015,#6600ff)', name:{it:"ROCK ALIVE TOUR",en:"ROCK ALIVE TOUR",es:"ROCK ALIVE TOUR"}, loc:{it:"Arena di Verona",en:"Arena di Verona",es:"Arena di Verona"}, date:"Dom 20 Lug 2025", time:"21:00", badge:"few", tickets:[{name:{it:"Platea",en:"Floor",es:"Platea"},desc:{it:"Posto numerato",en:"Numbered seat",es:"Asiento numerado"},price:45},{name:{it:"Tribuna Gold",en:"Gold Tribune",es:"Tribuna Gold"},desc:{it:"Vista premium",en:"Premium view",es:"Vista premium"},price:95}] },
+  { id:3, cat:'electronic', emoji:'🔊', gradient:'linear-gradient(135deg,#000d20,#00b4ff)', name:{it:"VOLTAGE FEST",en:"VOLTAGE FEST",es:"VOLTAGE FEST"}, loc:{it:"Fabrique, Milano",en:"Fabrique, Milano",es:"Fabrique, Milán"}, date:"Ven 18 Lug 2025", time:"22:00", badge:"available", tickets:[{name:{it:"Early Bird",en:"Early Bird",es:"Early Bird"},desc:{it:"Disponibilità limitata",en:"Limited availability",es:"Disponibilidad limitada"},price:22},{name:{it:"Standard",en:"Standard",es:"Estándar"},desc:{it:"Ingresso serata",en:"Evening entry",es:"Entrada noche"},price:30}] },
+  { id:4, cat:'festival', emoji:'🌅', gradient:'linear-gradient(135deg,#100020,#ff5500)', name:{it:"SUNSET FESTIVAL",en:"SUNSET FESTIVAL",es:"SUNSET FESTIVAL"}, loc:{it:"Spiagge, Gallipoli",en:"Spiagge, Gallipoli",es:"Playas, Gallipoli"}, date:"26–28 Lug 2025", time:"18:00", badge:"available", tickets:[{name:{it:"Day Pass",en:"Day Pass",es:"Pase Diario"},desc:{it:"Un giorno",en:"One day",es:"Un día"},price:35},{name:{it:"Full Pass 3 giorni",en:"3-Day Full Pass",es:"Pase 3 Días"},price:89,desc:{it:"Tutti e tre i giorni",en:"All three days",es:"Los tres días"}}] },
+  { id:5, cat:'club', emoji:'💜', gradient:'linear-gradient(135deg,#0a001a,#9900ff)', name:{it:"AFTERLIFE NIGHT",en:"AFTERLIFE NIGHT",es:"AFTERLIFE NIGHT"}, loc:{it:"Amnesia, Ibiza (IT Bus)",en:"Amnesia, Ibiza (IT Bus)",es:"Amnesia, Ibiza (Bus IT)"}, date:"Sab 5 Ago 2025", time:"00:00", badge:"sold", tickets:[{name:{it:"Sold Out",en:"Sold Out",es:"Agotado"},desc:{it:"Esaurito",en:"Sold out",es:"Agotado"},price:0}] },
+  { id:6, cat:'electronic', emoji:'⚡', gradient:'linear-gradient(135deg,#001020,#0057ff)', name:{it:"PULSE UNDERGROUND",en:"PULSE UNDERGROUND",es:"PULSE UNDERGROUND"}, loc:{it:"Volt Club, Roma",en:"Volt Club, Roma",es:"Volt Club, Roma"}, date:"Ven 25 Lug 2025", time:"23:30", badge:"few", tickets:[{name:{it:"Ingresso",en:"Entry",es:"Entrada"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:15},{name:{it:"Guest List",en:"Guest List",es:"Lista de Invitados"},desc:{it:"Nome in lista",en:"Name on list",es:"Nombre en lista"},price:10}] },
+   {id:7, cat:'club', emoji:'🌌', gradient:'linear-gradient(135deg,#020a1f,#0057ff)', name:{it:"NEON DISTRICT",en:"NEON DISTRICT",es:"NEON DISTRICT"}, loc:{it:"Cocoricò, Riccione",en:"Cocoricò, Riccione",es:"Cocoricò, Riccione"}, date:"Sab 12 Lug 2025", time:"23:00", badge:"available", tickets:[{name:{it:"Ingresso Standard",en:"Standard Entry",es:"Entrada Estándar"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:18},{name:{it:"VIP Table",en:"VIP Table",es:"Mesa VIP"},desc:{it:"Tavolo riservato + bottiglia",en:"Reserved table + bottle",es:"Mesa reservada + botella"},price:85}] },
+  { id:8, cat:'concert', emoji:'🎸', gradient:'linear-gradient(135deg,#0a0015,#6600ff)', name:{it:"ROCK ALIVE TOUR",en:"ROCK ALIVE TOUR",es:"ROCK ALIVE TOUR"}, loc:{it:"Arena di Verona",en:"Arena di Verona",es:"Arena di Verona"}, date:"Dom 20 Lug 2025", time:"21:00", badge:"few", tickets:[{name:{it:"Platea",en:"Floor",es:"Platea"},desc:{it:"Posto numerato",en:"Numbered seat",es:"Asiento numerado"},price:45},{name:{it:"Tribuna Gold",en:"Gold Tribune",es:"Tribuna Gold"},desc:{it:"Vista premium",en:"Premium view",es:"Vista premium"},price:95}] },
+];
 
-    // CAROSELLO EVENTI (Manuale/Puntatori)
-    const container = document.getElementById('carousel-container');
-    function scrollNext() {
-        const cardWidth = container.querySelector('.snap-center').offsetWidth + 24;
-        if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-            container.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-            container.scrollBy({ left: cardWidth, behavior: 'smooth' });
-        }
-    }
-    function scrollPrev() {
-        const cardWidth = container.querySelector('.snap-center').offsetWidth + 24;
-        container.scrollBy({ left: -cardWidth, behavior: 'smooth' });
-    }
+let currentFilter = 'all';
+function filterEvents(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvents(cat);
+}
+function renderEvents(cat) {
+  const grid = document.getElementById('eventsGrid');
+  const filtered = cat === 'all' ? eventsData : eventsData.filter(e => e.cat === cat);
+  const badgeLabels = {available:{it:"Disponibile",en:"Available",es:"Disponible"}, few:{it:"Ultimi posti",en:"Few left",es:"Últimos"}, sold:{it:"Sold Out",en:"Sold Out",es:"Agotado"}};
+  const buyLabels = {it:"Acquista",en:"Buy",es:"Comprar"};
+  grid.innerHTML = filtered.map(ev => `
+    <div class="event-card" data-cat="${ev.cat}" onclick="openModal(${ev.id})">
+      <div class="card-img">
+        <div class="card-img-bg" style="background:${ev.gradient}">${ev.emoji}</div>
+        <div class="card-badge ${ev.badge==='sold'?'sold':ev.badge==='few'?'few':''}">${badgeLabels[ev.badge][currentLang]}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-genre">${ev.cat.toUpperCase()}</div>
+        <div class="card-title">${ev.name[currentLang]}</div>
+        <div class="card-meta">
+          <span>📍 ${ev.loc[currentLang]}</span>
+          <span>📅 ${ev.date}</span>
+          <span>🕙 ${ev.time}</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          da €${Math.min(...ev.tickets.filter(t=>t.price>0).map(t=>t.price)) || 0}
+          <span>${ev.tickets[0].desc[currentLang]}</span>
+        </div>
+        ${ev.badge !== 'sold' ? `<button class="btn-buy" onclick="event.stopPropagation();openModal(${ev.id})">${buyLabels[currentLang]}</button>` : `<button class="btn-buy" style="background:rgba(255,60,60,0.3);cursor:not-allowed">Sold Out</button>`}
+      </div>
+    </div>
+  `).join('');
+}
 
-    // LOGICA CAROUSEL INFINITO (Richiesta dall'utente)
-    document.addEventListener('DOMContentLoaded', function() {
-        function startCarousel(selector, speed) {
-            const container = document.querySelector(selector);
-            if (!container) return;
-            const slides = container.querySelectorAll('.slide-box');
-            slides.forEach(slide => {
-                let clone = slide.cloneNode(true);
-                container.appendChild(clone);
-            });
-            let scrollPos = 0;
-            let resetWidth = container.scrollWidth / 2;
-            function animate() {
-                scrollPos += speed;
-                if (scrollPos >= resetWidth) { scrollPos = 0; }
-                container.scrollLeft = scrollPos;
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
+// ========== MODAL ==========
+let selectedEvent = null;
+let selectedTicket = null;
+let qty = 1;
+const FEE_RATE = 0.1;
 
-        // Avvio scorrimento infinito per Foto e Recensioni
-        startCarousel('.carousel-foto', 0.5);
-        startCarousel('.carousel-reviews', 0.5); // Recensioni un po' più lente
-    });
+function openModal(id) {
+  selectedEvent = eventsData.find(e => e.id === id);
+  if (!selectedEvent || selectedEvent.badge === 'sold') return;
+  qty = 1;
+  document.getElementById('qtyNum').textContent = 1;
+  document.getElementById('modalTitle').textContent = selectedEvent.name[currentLang];
+  document.getElementById('modalSub').textContent = `${selectedEvent.loc[currentLang]} • ${selectedEvent.date} ${selectedEvent.time}`;
+  renderTicketTypes();
+  showStep(1);
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function renderTicketTypes() {
+  const container = document.getElementById('ticketTypes');
+  const available = selectedEvent.tickets.filter(t => t.price > 0);
+  container.innerHTML = available.map((t,i) => `
+    <div class="ticket-type ${i===0?'selected':''}" onclick="selectTicket(${i},this)">
+      <div class="ticket-type-info">
+        <div class="ticket-type-name">${t.name[currentLang]}</div>
+        <div class="ticket-type-desc">${t.desc[currentLang]}</div>
+      </div>
+      <div class="ticket-type-price">€${t.price}</div>
+    </div>
+  `).join('');
+  selectedTicket = available[0];
+  updateSummary();
+}
+function selectTicket(i, el) {
+  document.querySelectorAll('.ticket-type').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTicket = selectedEvent.tickets.filter(t=>t.price>0)[i];
+  updateSummary();
+}
+function changeQty(delta) {
+  qty = Math.max(1, Math.min(10, qty + delta));
+  document.getElementById('qtyNum').textContent = qty;
+  updateSummary();
+}
+function updateSummary() {
+  if (!selectedTicket) return;
+  const sub = selectedTicket.price * qty;
+  const fees = sub * FEE_RATE;
+  const total = sub + fees;
+  document.getElementById('summarySubtotal').textContent = `€${sub.toFixed(2)}`;
+  document.getElementById('summaryFees').textContent = `€${fees.toFixed(2)}`;
+  document.getElementById('summaryTotal').textContent = `€${total.toFixed(2)}`;
+}
+function goToCheckout() { showStep(2); }
+function goBack() { showStep(1); }
+function showStep(n) {
+  ['step1','step2','step3'].forEach((s,i) => {
+    document.getElementById(s).classList.toggle('active', i+1===n);
+  });
+}
+function completeOrder() {
+  const fname = document.getElementById('fname').value;
+  const email = document.getElementById('email').value;
+  if (!fname || !email) { showToast('⚠️ Compila tutti i campi'); return; }
+  const id = 'NP-' + Math.random().toString(36).substr(2,8).toUpperCase();
+  document.getElementById('ticketId').textContent = id;
+  showStep(3);
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => showStep(1), 300);
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
 
+// ========== TOAST ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
+// ========== CARD FORMATTING ==========
+document.addEventListener('input', e => {
+  if (e.target.id === 'card') {
+    e.target.value = e.target.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().substring(0,19);
+  }
+  if (e.target.id === 'expiry') {
+    e.target.value = e.target.value.replace(/\D/g,'').replace(/(\d{2})(\d)/,'$1/$2').substring(0,5);
+  }
+});
+
+// ========== INIT ==========
+renderEvents('all');
 </script>
-
 </body>
 </html>
