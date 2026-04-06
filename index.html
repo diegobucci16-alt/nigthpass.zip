@@ -1,1092 +1,691 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NightPass — Vivi la Notte</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>NIGHTPASS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #020408;
-    --bg2: #060d18;
-    --surface: #0a1628;
-    --surface2: #0f1f3a;
-    --blue: #0057ff;
-    --blue2: #003dbd;
-    --electric: #00b4ff;
-    --electric2: #00eaff;
-    --accent: #1a3fff;
-    --text: #f0f6ff;
-    --text2: #8aabd4;
-    --text3: #4a6a94;
-    --border: rgba(0,100,255,0.18);
-    --glow: 0 0 30px rgba(0,180,255,0.25);
-    --glow2: 0 0 60px rgba(0,87,255,0.3);
-    --card-bg: rgba(10,22,40,0.85);
-    --transition: 0.35s cubic-bezier(.4,0,.2,1);
-  }
-  .light-mode {
-    --bg: #f0f4ff;
-    --bg2: #e6ecfa;
-    --surface: #ffffff;
-    --surface2: #f5f8ff;
-    --text: #0a1628;
-    --text2: #2a4a7a;
-    --text3: #8aabd4;
-    --border: rgba(0,87,255,0.15);
-    --card-bg: rgba(255,255,255,0.9);
-    --glow: 0 0 30px rgba(0,87,255,0.1);
-  }
+:root {
+  --blue:          #2563EB;
+  --blue-light:    #60A5FA;
+  --blue-glow:     rgba(37,99,235,0.4);
+  --blue-soft:     rgba(37,99,235,0.12);
+  --blue-border:   rgba(96,165,250,0.3);
+  --glass-bg:      rgba(255,255,255,0.05);
+  --glass-bg2:     rgba(255,255,255,0.09);
+  --glass-border:  rgba(255,255,255,0.09);
+  --glass-border2: rgba(255,255,255,0.15);
+  --text-dim:      rgba(255,255,255,0.45);
+  --text-mute:     rgba(255,255,255,0.22);
+  --page-bg:       #04040e;
+}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--page-bg);color:#fff;min-height:100vh;overflow-x:hidden;padding-bottom:88px;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
+/* BG ORBS */
+.bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:drift 22s ease-in-out infinite alternate;}
+.orb-1{width:520px;height:520px;background:radial-gradient(circle,#1d4ed8 0%,transparent 70%);top:-120px;left:-120px;opacity:.35;animation-duration:24s;}
+.orb-2{width:420px;height:420px;background:radial-gradient(circle,#0284c7 0%,transparent 70%);bottom:15%;right:-80px;opacity:.3;animation-duration:19s;animation-delay:-6s;}
+.orb-3{width:320px;height:320px;background:radial-gradient(circle,#4f46e5 0%,transparent 70%);top:42%;left:28%;opacity:.2;animation-duration:26s;animation-delay:-12s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(35px,28px) scale(1.08);}}
 
-  body {
-    font-family: 'Space Grotesk', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow-x: hidden;
-    transition: background var(--transition), color var(--transition);
-  }
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.55;}
 
-  /* ANIMATED BACKGROUND */
-  .bg-mesh {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,87,255,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(0,180,255,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,60,180,0.05) 0%, transparent 70%);
-    animation: meshMove 12s ease-in-out infinite alternate;
-  }
-  @keyframes meshMove {
-    0% { opacity:1; transform:scale(1) translateY(0); }
-    100% { opacity:.7; transform:scale(1.05) translateY(-20px); }
-  }
-  .grid-overlay {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(0,87,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,87,255,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridShift 20s linear infinite;
-  }
-  @keyframes gridShift { 0%{transform:translateY(0)} 100%{transform:translateY(60px)} }
+/* FONT */
+.syne{font-family:'Syne',sans-serif;}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 5%;
-    height: 70px;
-    background: rgba(2,4,8,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    transition: background var(--transition);
-  }
-  .light-mode nav { background: rgba(240,244,255,0.9); }
+/* GLASS */
+.glass{background:var(--glass-bg);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glass-border);}
+.glass-dark{background:rgba(4,4,18,0.72);backdrop-filter:blur(36px) saturate(180%);-webkit-backdrop-filter:blur(36px) saturate(180%);border:1px solid var(--glass-border);}
 
-  .logo {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    background: linear-gradient(135deg, var(--electric) 0%, var(--blue) 60%, var(--electric2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none;
-    cursor: pointer;
-  }
+/* HEADER */
+.header{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(4,4,18,0.72);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.07);}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:.07em;}
+.logo-n{color:#fff;}.logo-p{color:var(--blue-light);}
+.avatar-btn{width:38px;height:38px;border-radius:50%;background:var(--blue-soft);border:1.5px solid var(--blue-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;color:var(--blue-light);}
+.avatar-btn:hover{background:rgba(37,99,235,.25);box-shadow:0 0 20px var(--blue-glow);}
 
-  .nav-links { display: flex; align-items: center; gap: 2rem; }
-  .nav-links a {
-    color: var(--text2);
-    text-decoration: none;
-    font-size: .9rem;
-    font-weight: 500;
-    letter-spacing: .05em;
-    transition: color .2s;
-    cursor: pointer;
-  }
-  .nav-links a:hover { color: var(--electric); }
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:76px;display:flex;align-items:center;padding:0 10px;padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(4,4,18,0.82);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-top:1px solid rgba(255,255,255,0.07);gap:4px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:56px;border-radius:16px;cursor:pointer;transition:all .22s ease;border:none;background:transparent;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;}
+.nav-item svg{width:22px;height:22px;transition:all .22s ease;}
+.nav-item.active{background:var(--blue-soft);color:var(--blue-light);border:1px solid var(--blue-border);}
+.nav-item.active svg{filter:drop-shadow(0 0 6px rgba(96,165,250,.7));}
 
-  .nav-controls { display: flex; align-items: center; gap: 1rem; }
+/* SECTIONS */
+.section{display:none;padding:78px 16px 20px;min-height:100vh;position:relative;z-index:2;}
+.section.active{display:block;animation:fadeUp .3s ease forwards;}
 
-  .lang-btn, .theme-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text2);
-    padding: .35rem .8rem;
-    border-radius: 6px;
-    font-size: .8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .2s;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: .05em;
-  }
-  .lang-btn:hover, .theme-btn:hover {
-    border-color: var(--electric);
-    color: var(--electric);
-    box-shadow: 0 0 12px rgba(0,180,255,0.2);
-  }
-  .lang-selector { position: relative; }
-  .lang-dropdown {
-    position: absolute; top: calc(100% + 8px); right: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    display: none;
-    min-width: 120px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    z-index: 9999;
-  }
-  .lang-dropdown.open { display: block; animation: fadeDown .15s ease; }
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-  .lang-dropdown button {
-    width: 100%; background: none; border: none;
-    color: var(--text2); padding: .6rem 1rem;
-    font-size: .85rem; text-align: left; cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: background .15s, color .15s;
-  }
-  .lang-dropdown button:hover { background: var(--surface2); color: var(--electric); }
-  .lang-dropdown button.active { color: var(--electric); font-weight: 600; }
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.au{animation:fadeUp .4s ease forwards;opacity:0;}
+.d1{animation-delay:.04s;}.d2{animation-delay:.1s;}.d3{animation-delay:.16s;}.d4{animation-delay:.22s;}.d5{animation-delay:.28s;}
 
-  /* SECTIONS */
-  section { position: relative; z-index: 1; }
+/* BUTTONS */
+.btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;padding:14px 22px;border:none;border-radius:14px;cursor:pointer;position:relative;overflow:hidden;transition:all .25s ease;box-shadow:0 4px 20px rgba(37,99,235,.4),0 1px 0 rgba(255,255,255,.12) inset;}
+.btn-p::before{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,rgba(255,255,255,.12),transparent);pointer-events:none;}
+.btn-p:hover{background:#1d4ed8;box-shadow:0 6px 28px rgba(37,99,235,.6),0 1px 0 rgba(255,255,255,.12) inset;transform:translateY(-1px);}
+.btn-p:active{transform:translateY(0);}
+.btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none;}
+.btn-g{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--glass-bg);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:13px 20px;border:1px solid var(--glass-border2);border-radius:14px;cursor:pointer;transition:all .22s ease;backdrop-filter:blur(10px);}
+.btn-g:hover{background:var(--glass-bg2);color:#fff;border-color:rgba(255,255,255,.25);}
 
-  /* HERO */
-  #hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    text-align: center;
-    padding: 120px 5% 80px;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(0,87,255,0.12);
-    border: 1px solid rgba(0,87,255,0.3);
-    color: var(--electric);
-    padding: .4rem 1.2rem;
-    border-radius: 100px;
-    font-size: .8rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    animation: pulse 3s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100%{box-shadow:0 0 0 0 rgba(0,180,255,0.2)}
-    50%{box-shadow:0 0 0 8px rgba(0,180,255,0)}
-  }
-  .dot-live {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--electric2);
-    animation: blink 1.2s ease infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+/* INPUTS */
+.f-wrap{position:relative;margin-bottom:15px;}
+.f-label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase;}
+.f-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:all .22s ease;appearance:none;}
+.f-input::placeholder{color:var(--text-mute);}
+.f-input:focus{border-color:var(--blue-light);background:rgba(37,99,235,.08);box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+.f-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--text-mute);cursor:pointer;padding:4px;transition:color .2s;}
+.f-eye:hover{color:var(--blue-light);}
 
-  .hero-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(4rem, 12vw, 10rem);
-    line-height: .9;
-    letter-spacing: .02em;
-    margin-bottom: 1.5rem;
-    animation: heroIn .8s cubic-bezier(.2,0,.1,1) both;
-  }
-  @keyframes heroIn { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
-  .hero-title span {
-    display: block;
-    background: linear-gradient(135deg, var(--text) 0%, var(--electric) 50%, var(--blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero-title .outline {
-    -webkit-text-stroke: 2px var(--electric);
-    -webkit-text-fill-color: transparent;
-    opacity: .5;
-  }
+/* PILL */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:500;}
+.pill-b{background:var(--blue-soft);border:1px solid var(--blue-border);color:var(--blue-light);}
+.dot{width:6px;height:6px;border-radius:50%;background:#22d3ee;box-shadow:0 0 8px #22d3ee;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-  .hero-sub {
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    color: var(--text2);
-    max-width: 580px;
-    line-height: 1.7;
-    margin-bottom: 3rem;
-    animation: heroIn .8s .15s cubic-bezier(.2,0,.1,1) both;
-  }
+/* SECTION LABEL */
+.sec-lbl{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue-light);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--blue-border),transparent);}
 
-  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: heroIn .8s .3s both; }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--blue) 0%, var(--electric) 100%);
-    color: #fff;
-    border: none;
-    padding: .85rem 2.2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    cursor: pointer;
-    letter-spacing: .05em;
-    transition: all .25s;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-primary::after {
-    content:'';position:absolute;inset:0;
-    background:rgba(255,255,255,0);
-    transition:.25s;
-  }
-  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,87,255,0.5); }
-  .btn-primary:hover::after { background:rgba(255,255,255,0.08); }
+/* HERO */
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(46px,13vw,82px);font-weight:800;line-height:.9;letter-spacing:-.02em;}
 
-  .btn-outline {
-    background: transparent;
-    color: var(--electric);
-    border: 1.5px solid var(--electric);
-    padding: .85rem 2.2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    font-family: 'Space Grotesk', sans-serif;
-    cursor: pointer;
-    letter-spacing: .05em;
-    transition: all .25s;
-  }
-  .btn-outline:hover {
-    background: rgba(0,180,255,0.08);
-    box-shadow: 0 0 20px rgba(0,180,255,0.2);
-    transform: translateY(-2px);
-  }
+/* GENRE SCROLL */
+.g-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px;}
+.g-scroll::-webkit-scrollbar{display:none;}
+.g-chip{flex-shrink:0;padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s ease;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text-dim);white-space:nowrap;}
+.g-chip.active,.g-chip:hover{background:var(--blue-soft);border-color:var(--blue-border);color:var(--blue-light);}
 
-  .hero-stats {
-    display: flex; gap: 3rem; margin-top: 4rem;
-    flex-wrap: wrap; justify-content: center;
-    animation: heroIn .8s .45s both;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2rem; font-weight: 700;
-    color: var(--electric);
-    line-height: 1;
-  }
-  .stat-label { font-size: .8rem; color: var(--text3); margin-top: .3rem; letter-spacing: .08em; text-transform: uppercase; }
+/* EVENTS GRID */
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(min-width:480px){.ev-grid{grid-template-columns:repeat(3,1fr);}}
 
-  /* EVENTS */
-  #events { padding: 100px 5%; }
-  .section-header { text-align: center; margin-bottom: 3.5rem; }
-  .section-tag {
-    display: inline-block;
-    color: var(--electric);
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    margin-bottom: .8rem;
-  }
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    letter-spacing: .03em;
-    line-height: 1;
-  }
-  .section-sub { color: var(--text2); margin-top: .8rem; font-size: 1rem; }
+/* EVENT CARD */
+.ev-card{border-radius:20px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);position:relative;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.ev-card:hover{transform:translateY(-5px) scale(1.012);border-color:var(--blue-border);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(37,99,235,.25),0 0 40px rgba(37,99,235,.12);}
+.ev-card:active{transform:scale(.98);}
+.ev-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;transition:transform .4s ease;}
+.ev-card:hover .ev-img{transform:scale(1.05);}
+.ev-img-wrap{overflow:hidden;position:relative;}
+.ev-img-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,18,.95) 0%,rgba(4,4,18,.25) 55%,transparent 100%);}
+.ev-genre{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:3px 9px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.85);}
 
-  /* FILTER TABS */
-  .filter-tabs {
-    display: flex; gap: .5rem; justify-content: center;
-    flex-wrap: wrap; margin-bottom: 2.5rem;
-  }
-  .filter-tab {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text2);
-    padding: .5rem 1.4rem;
-    border-radius: 100px;
-    font-size: .85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .2s;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  .filter-tab:hover, .filter-tab.active {
-    background: linear-gradient(135deg, var(--blue), var(--electric));
-    border-color: transparent;
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(0,87,255,0.35);
-  }
+/* SM CARD */
+.h-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px;}
+.h-scroll::-webkit-scrollbar{display:none;}
+.ev-sm{flex-shrink:0;width:185px;border-radius:16px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .25s ease;}
+.ev-sm:hover{border-color:var(--blue-border);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 20px rgba(37,99,235,.12);}
 
-  /* EVENT CARDS GRID */
-  .events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-  }
-  .event-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all .3s;
-    backdrop-filter: blur(10px);
-    position: relative;
-  }
-  .event-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--electric);
-    box-shadow: var(--glow), 0 20px 60px rgba(0,0,0,0.4);
-  }
-  .card-img {
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-  }
-  .card-img-bg {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 4rem;
-    transition: transform .4s;
-  }
-  .event-card:hover .card-img-bg { transform: scale(1.08); }
-  .card-badge {
-    position: absolute; top: 12px; left: 12px;
-    background: rgba(0,87,255,0.9);
-    color: #fff;
-    padding: .25rem .7rem;
-    border-radius: 100px;
-    font-size: .7rem;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    backdrop-filter: blur(8px);
-  }
-  .card-badge.sold { background: rgba(255,60,60,0.9); }
-  .card-badge.few { background: rgba(255,150,0,0.9); }
+/* TICKET OPTION */
+.tk-opt{border-radius:16px;padding:16px;border:1.5px solid var(--glass-border);background:var(--glass-bg);cursor:pointer;transition:all .22s ease;position:relative;overflow:hidden;}
+.tk-opt:hover{border-color:var(--blue-border);background:var(--blue-soft);}
+.tk-opt.selected{border-color:var(--blue-light);background:var(--blue-soft);box-shadow:0 0 0 3px rgba(37,99,235,.18),0 4px 20px rgba(37,99,235,.18);}
+.tk-opt.selected::after{content:'✓';position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.tk-opt.disabled{opacity:.32;pointer-events:none;}
 
-  .card-body { padding: 1.25rem; }
-  .card-genre {
-    font-size: .7rem; font-weight: 700; letter-spacing: .15em;
-    text-transform: uppercase; color: var(--electric);
-    margin-bottom: .4rem;
-  }
-  .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; line-height: 1.3; }
-  .card-meta { display: flex; gap: 1rem; color: var(--text2); font-size: .82rem; flex-wrap: wrap; }
-  .card-meta span { display: flex; align-items: center; gap: .3rem; }
+/* PROGRESS */
+.prog{display:flex;align-items:flex-start;margin-bottom:26px;gap:0;}
+.ps{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;}
+.ps:not(:last-child)::after{content:'';position:absolute;top:15px;left:50%;right:-50%;height:1.5px;background:rgba(255,255,255,.08);z-index:0;}
+.ps.done:not(:last-child)::after{background:var(--blue);}
+.pdot{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-dim);z-index:1;transition:all .25s ease;}
+.ps.active .pdot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 16px rgba(37,99,235,.5);}
+.ps.done .pdot{background:var(--blue);border-color:var(--blue);color:#fff;}
+.plbl{font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mute);}
+.ps.active .plbl{color:var(--blue-light);}
 
-  .card-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.25rem;
-    border-top: 1px solid var(--border);
-  }
-  .card-price { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--electric); }
-  .card-price span { font-size: .7rem; color: var(--text3); font-family: 'Space Grotesk', sans-serif; font-weight: 400; display:block; }
-  .btn-buy {
-    background: linear-gradient(135deg, var(--blue), var(--electric));
-    color: #fff; border: none;
-    padding: .5rem 1.3rem;
-    border-radius: 8px;
-    font-size: .85rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: all .2s;
-    letter-spacing: .04em;
-  }
-  .btn-buy:hover { box-shadow: 0 4px 20px rgba(0,87,255,0.5); transform:translateY(-1px); }
+/* MODAL */
+.modal-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.modal-ov.show{opacity:1;pointer-events:all;}
+.modal-sheet{width:100%;max-width:480px;background:rgba(8,8,22,0.92);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border:1px solid rgba(255,255,255,.1);border-radius:28px 28px 0 0;padding:12px 22px 40px;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);max-height:92vh;overflow-y:auto;}
+.modal-ov.show .modal-sheet{transform:translateY(0);}
+.modal-handle{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.14);margin:0 auto 20px;}
 
-  /* TICKET MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 2000;
-    background: rgba(0,0,0,.75);
-    backdrop-filter: blur(12px);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none;
-    transition: opacity .3s;
-    padding: 1rem;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    width: 100%; max-width: 560px;
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: translateY(30px) scale(.97);
-    transition: transform .3s cubic-bezier(.2,0,.1,1);
-    position: relative;
-  }
-  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
-  .modal-header {
-    padding: 1.5rem 1.5rem 0;
-    display: flex; justify-content: space-between; align-items: flex-start;
-  }
-  .modal-close {
-    background: var(--surface2); border: 1px solid var(--border);
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--text2);
-    font-size: 1.1rem; transition: all .2s; flex-shrink: 0;
-  }
-  .modal-close:hover { border-color: var(--electric); color: var(--electric); }
-  .modal-body { padding: 1.5rem; }
-  .modal-event-title { font-size: 1.5rem; font-weight: 700; margin-bottom: .4rem; }
-  .modal-event-sub { color: var(--text2); font-size: .9rem; margin-bottom: 1.5rem; }
+/* AUTH TABS */
+.auth-tabs{display:flex;gap:0;border-radius:12px;background:rgba(255,255,255,.05);padding:4px;margin-bottom:22px;}
+.auth-tab{flex:1;padding:10px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-dim);transition:all .2s;text-align:center;}
+.auth-tab.active{background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(37,99,235,.4);}
 
-  .ticket-types { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
-  .ticket-type {
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: space-between;
-    transition: all .2s;
-  }
-  .ticket-type:hover, .ticket-type.selected {
-    border-color: var(--electric);
-    background: rgba(0,87,255,0.08);
-  }
-  .ticket-type-info { flex: 1; }
-  .ticket-type-name { font-weight: 700; margin-bottom: .2rem; }
-  .ticket-type-desc { font-size: .8rem; color: var(--text2); }
-  .ticket-type-price { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--electric); font-weight: 700; }
-  .ticket-qty { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
-  .qty-label { font-weight: 600; }
-  .qty-controls { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
-  .qty-btn {
-    width: 36px; height: 36px; border-radius: 8px;
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .2s;
-  }
-  .qty-btn:hover { border-color: var(--electric); color: var(--electric); }
-  .qty-num { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; width: 30px; text-align: center; }
+/* DROPDOWN */
+.dd{position:absolute;top:66px;right:16px;width:210px;border-radius:18px;overflow:hidden;z-index:300;transform:scale(.9) translateY(-8px);transform-origin:top right;opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.34,1.56,.64,1);}
+.dd.show{opacity:1;pointer-events:all;transform:scale(1) translateY(0);}
+.dd-item{display:flex;align-items:center;gap:11px;padding:13px 15px;font-size:14px;font-weight:400;cursor:pointer;transition:background .15s;color:rgba(255,255,255,.8);}
+.dd-item:hover{background:rgba(255,255,255,.06);}
+.dd-item.red{color:#f87171;}.dd-item.red:hover{background:rgba(248,113,113,.1);}
 
-  .order-summary {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.5rem;
-  }
-  .summary-row { display: flex; justify-content: space-between; margin-bottom: .4rem; font-size: .9rem; color: var(--text2); }
-  .summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--text); padding-top: .6rem; border-top: 1px solid var(--border); margin-top: .4rem; }
-  .summary-total .price { color: var(--electric); font-family: 'Orbitron', sans-serif; }
+/* PROCESSING */
+.proc-ov{position:fixed;inset:0;z-index:400;background:rgba(4,4,14,.92);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.proc-ov.show{display:flex;animation:fadeUp .2s ease;}
+.spin{width:52px;height:52px;border:3px solid rgba(37,99,235,.2);border-top-color:var(--blue-light);border-radius:50%;animation:spin .75s linear infinite;box-shadow:0 0 28px rgba(37,99,235,.3);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.proc-txt{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--blue-light);animation:blink 1.2s ease infinite;}
 
-  .btn-checkout {
-    width: 100%;
-    background: linear-gradient(135deg, var(--blue), var(--electric));
-    color: #fff; border: none;
-    padding: 1rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: .05em;
-    transition: all .25s;
-  }
-  .btn-checkout:hover { box-shadow: 0 6px 30px rgba(0,87,255,0.5); transform: translateY(-2px); }
+/* PASS CARD */
+.pass-card{max-width:340px;margin:0 auto;border-radius:24px;overflow:hidden;background:rgba(6,6,20,.96);border:1px solid rgba(37,99,235,.45);box-shadow:0 0 60px rgba(37,99,235,.22),0 30px 80px rgba(0,0,0,.6);position:relative;}
+.pass-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(37,99,235,.1) 0%,transparent 55%);pointer-events:none;}
+.pass-head{background:linear-gradient(135deg,var(--blue) 0%,#1e3a8a 100%);padding:22px 22px 18px;position:relative;overflow:hidden;}
+.pass-head::after{content:'NP';position:absolute;right:-8px;bottom:-14px;font-family:'Syne',sans-serif;font-size:78px;font-weight:800;color:rgba(255,255,255,.06);letter-spacing:-.04em;line-height:1;}
+.pass-div{display:flex;align-items:center;margin:0 -1px;}
+.pass-div::before,.pass-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+.notch{width:22px;height:22px;border-radius:50%;background:var(--page-bg);flex-shrink:0;border:1px solid rgba(37,99,235,.3);margin:0 -11px;}
+.pass-qr{background:#fff;padding:20px;display:flex;align-items:center;justify-content:center;}
+#qrcode,#qrcode-detail{display:flex;align-items:center;justify-content:center;}
+#qrcode canvas,#qrcode-detail canvas,#qrcode img,#qrcode-detail img{width:160px !important;height:160px !important;}
 
-  /* CHECKOUT FORM */
-  .checkout-step { display: none; }
-  .checkout-step.active { display: block; }
-  .form-group { margin-bottom: 1rem; }
-  .form-label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; color: var(--text2); }
-  .form-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    color: var(--text);
-    padding: .75rem 1rem;
-    border-radius: 8px;
-    font-size: .95rem;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: border-color .2s;
-    outline: none;
-  }
-  .form-input:focus { border-color: var(--electric); box-shadow: 0 0 0 3px rgba(0,180,255,0.1); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-
-  /* SUCCESS */
-  .success-screen {
-    text-align: center; padding: 2rem;
-  }
-  .success-icon {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--electric));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; margin: 0 auto 1.5rem;
-    animation: successPop .5s cubic-bezier(.2,0,.1,1) both;
-  }
-  @keyframes successPop { from{transform:scale(0)} to{transform:scale(1)} }
-
-  /* FEATURES */
-  #features { padding: 100px 5%; }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-  .feature-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(10px);
-    transition: all .3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .feature-card::before {
-    content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background: linear-gradient(90deg,transparent,var(--electric),transparent);
-    opacity:0;transition:.3s;
-  }
-  .feature-card:hover { border-color: var(--electric); transform:translateY(-4px); box-shadow: var(--glow); }
-  .feature-card:hover::before { opacity:1; }
-  .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-  .feature-title { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
-  .feature-desc { font-size: .9rem; color: var(--text2); line-height: 1.6; }
-
-  /* FOOTER */
-  footer {
-    padding: 4rem 5% 2rem;
-    border-top: 1px solid var(--border);
-    position: relative; z-index: 1;
-  }
-  .footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 3rem; margin-bottom: 3rem;
-  }
-  @media(max-width:768px){ .footer-top{ grid-template-columns:1fr 1fr; } }
-  .footer-brand .logo { font-size: 1.2rem; }
-  .footer-desc { color: var(--text2); font-size: .9rem; line-height: 1.6; margin-top: .8rem; }
-  .footer-col h4 { font-size: .8rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--electric); margin-bottom: 1rem; }
-  .footer-col a { display: block; color: var(--text2); text-decoration: none; font-size: .9rem; margin-bottom: .5rem; transition: color .2s; cursor:pointer; }
-  .footer-col a:hover { color: var(--text); }
-  .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-  .footer-copy { font-size: .85rem; color: var(--text3); }
-  .footer-badges { display: flex; gap: .75rem; }
-  .footer-badge {
-    background: var(--surface); border: 1px solid var(--border);
-    padding: .3rem .8rem; border-radius: 6px;
-    font-size: .75rem; color: var(--text2); font-weight: 600;
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
-    background: var(--surface);
-    border: 1px solid var(--electric);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    font-size: .9rem;
-    font-weight: 600;
-    color: var(--text);
-    box-shadow: var(--glow2);
-    transform: translateY(20px); opacity: 0;
-    transition: all .3s cubic-bezier(.2,0,.1,1);
-    max-width: 320px;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--blue2); border-radius: 3px; }
-
-  /* MOBILE */
-  @media(max-width:640px){
-    .nav-links{ display:none; }
-    .hero-stats{ gap:1.5rem; }
-    .form-row{ grid-template-columns:1fr; }
-  }
+/* MISC */
+.price-tag{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--blue-light);}
+.info-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.info-row:last-child{border:none;}
+.iw{width:36px;height:36px;border-radius:10px;background:var(--blue-soft);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.back-btn{display:inline-flex;align-items:center;gap:7px;background:none;border:none;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;padding:0;margin-bottom:20px;transition:color .2s;}
+.back-btn:hover{color:var(--blue-light);}
+.detail-cover{margin:0 -16px;height:255px;position:relative;overflow:hidden;}
+.detail-cover img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.3);}
+.detail-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(4,4,18,0) 25%,rgba(4,4,18,1) 100%);}
+.detail-cnt{position:absolute;bottom:18px;left:18px;right:18px;}
+.empty-st{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;gap:14px;}
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:12px 16px;transition:all .22s ease;}
+.search-bar:focus-within{border-color:var(--blue-border);background:rgba(37,99,235,.06);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.s-input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;}
+.s-input::placeholder{color:var(--text-mute);}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(37,99,235,.35);border-radius:99px;}
 </style>
 </head>
 <body>
 
-<!-- BACKGROUNDS -->
-<div class="bg-mesh"></div>
-<div class="grid-overlay"></div>
+<!-- BG -->
+<div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
-<!-- NAV -->
-<nav>
-  <div class="logo" onclick="scrollTo({top:0,behavior:'smooth'})">NIGHTPASS</div>
-  <div class="nav-links">
-    <a onclick="document.getElementById('events').scrollIntoView({behavior:'smooth'})" data-i18n="nav_events">Eventi</a>
-    <a onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" data-i18n="nav_features">Perché NightPass</a>
-    <a data-i18n="nav_app">App</a>
-    <a data-i18n="nav_contact">Contatti</a>
-  </div>
-  <div class="nav-controls">
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☾ Dark</button>
-    <div class="lang-selector">
-      <button class="lang-btn" onclick="toggleLangMenu()" id="langBtn">🌐 IT</button>
-      <div class="lang-dropdown" id="langMenu">
-        <button class="active" onclick="setLang('it')">🇮🇹 Italiano</button>
-        <button onclick="setLang('en')">🇬🇧 English</button>
-        <button onclick="setLang('es')">🇪🇸 Español</button>
-      </div>
+<!-- PROCESSING -->
+<div class="proc-ov" id="procOv">
+  <div class="spin"></div>
+  <div class="proc-txt" id="procTxt">Processing payment…</div>
+  <div style="font-size:13px;color:var(--text-mute);">Transazione sicura e cifrata</div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-ov" id="authModal" onclick="closeAuthOut(event)">
+  <div class="modal-sheet" id="authSheet">
+    <div class="modal-handle"></div>
+    <div class="syne" style="font-size:26px;font-weight:800;margin-bottom:5px;">Benvenuto 👋</div>
+    <div style="font-size:14px;color:var(--text-dim);margin-bottom:22px;">Accedi o crea un account NIGHTPASS</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabL" onclick="switchTab('login')">Accedi</button>
+      <button class="auth-tab" id="tabR" onclick="switchTab('reg')">Registrati</button>
     </div>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-badge"><span class="dot-live"></span><span data-i18n="hero_badge">Prevendite Live Ora</span></div>
-  <h1 class="hero-title">
-    <span>VIVI LA</span>
-    <span class="outline">NOTTE</span>
-  </h1>
-  <p class="hero-sub" data-i18n="hero_sub">La piattaforma italiana per le prevendite di eventi, concerti, club e festival. Acquista il tuo biglietto in pochi secondi.</p>
-  <div class="hero-ctas">
-    <button class="btn-primary" onclick="document.getElementById('events').scrollIntoView({behavior:'smooth'})" data-i18n="hero_cta1">Scopri gli eventi →</button>
-    <button class="btn-outline" data-i18n="hero_cta2">Scarica l'app</button>
-  </div>
-  <div class="hero-stats">
-    <div class="stat"><div class="stat-num">120K+</div><div class="stat-label" data-i18n="stat1">Biglietti venduti</div></div>
-    <div class="stat"><div class="stat-num">850+</div><div class="stat-label" data-i18n="stat2">Eventi attivi</div></div>
-    <div class="stat"><div class="stat-num">98%</div><div class="stat-label" data-i18n="stat3">Soddisfazione</div></div>
-    <div class="stat"><div class="stat-num">60+</div><div class="stat-label" data-i18n="stat4">Città coperte</div></div>
-  </div>
-</section>
-
-<!-- EVENTS -->
-<section id="events">
-  <div class="section-header">
-    <div class="section-tag" data-i18n="events_tag">Prevendite</div>
-    <h2 class="section-title" data-i18n="events_title">EVENTI IN ARRIVO</h2>
-    <p class="section-sub" data-i18n="events_sub">Scegli il tuo evento e acquista subito il biglietto</p>
-  </div>
-
-  <div class="filter-tabs">
-    <button class="filter-tab active" onclick="filterEvents('all',this)" data-i18n="filter_all">Tutti</button>
-    <button class="filter-tab" onclick="filterEvents('club',this)" data-i18n="filter_club">Club</button>
-    <button class="filter-tab" onclick="filterEvents('concert',this)" data-i18n="filter_concert">Concerti</button>
-    <button class="filter-tab" onclick="filterEvents('festival',this)" data-i18n="filter_festival">Festival</button>
-    <button class="filter-tab" onclick="filterEvents('electronic',this)" data-i18n="filter_electronic">Elettronica</button>
-  </div>
-
-  <div class="events-grid" id="eventsGrid"></div>
-</section>
-
-<!-- FEATURES -->
-<section id="features">
-  <div class="section-header">
-    <div class="section-tag" data-i18n="feat_tag">Perché sceglierci</div>
-    <h2 class="section-title" data-i18n="feat_title">NIGHTPASS È DIVERSO</h2>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title" data-i18n="f1t">Acquisto in 10 secondi</div><div class="feature-desc" data-i18n="f1d">Nessuna attesa, nessun coda. Compra il tuo biglietto in meno di 10 secondi con la nostra app.</div></div>
-    <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-title" data-i18n="f2t">100% Sicuro</div><div class="feature-desc" data-i18n="f2d">Pagamenti crittografati, biglietti digitali anti-contraffazione con QR code univoco.</div></div>
-    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title" data-i18n="f3t">Sempre con te</div><div class="feature-desc" data-i18n="f3d">Il biglietto è nel tuo smartphone. Nessuna stampa, nessun rischio di perdita.</div></div>
-    <div class="feature-card"><div class="feature-icon">💙</div><div class="feature-title" data-i18n="f4t">Supporto 24/7</div><div class="feature-desc" data-i18n="f4d">Il nostro team è sempre disponibile per aiutarti prima, durante e dopo l'evento.</div></div>
-    <div class="feature-card"><div class="feature-icon">🎟️</div><div class="feature-title" data-i18n="f5t">Biglietti Nominativi</div><div class="feature-desc" data-i18n="f5d">I tuoi biglietti sono al sicuro: solo tu puoi accedere all'evento con il tuo documento.</div></div>
-    <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title" data-i18n="f6t">Multilingua</div><div class="feature-desc" data-i18n="f6d">Disponibile in italiano, inglese e spagnolo. Per vivere la notte senza frontiere.</div></div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <div class="logo">NIGHTPASS</div>
-      <p class="footer-desc" data-i18n="footer_desc">La tua piattaforma per le prevendite di eventi. Musica, club, festival e molto altro.</p>
+    <!-- LOGIN -->
+    <div id="fLogin">
+      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="lEmail" placeholder="tua@email.it" autocomplete="email"/></div>
+      <div class="f-wrap" style="position:relative"><label class="f-label">Password</label><input type="password" class="f-input" id="lPass" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px"/><span class="f-eye" onclick="togEye('lPass',this)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span></div>
+      <div id="lErr" style="color:#f87171;font-size:13px;margin:-8px 0 10px;display:none;border-radius:8px;background:rgba(248,113,113,.1);padding:8px 12px;"></div>
+      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="doLogin()">Accedi al mio account</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text-mute);">Demo: qualsiasi email + password (min 6 char)</div>
     </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer_events">Eventi</h4>
-      <a data-i18n="fc_club">Club & Discoteche</a>
-      <a data-i18n="fc_concerts">Concerti</a>
-      <a data-i18n="fc_festival">Festival</a>
-      <a data-i18n="fc_special">Serate Speciali</a>
-    </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer_info">Info</h4>
-      <a data-i18n="fc_howit">Come funziona</a>
-      <a data-i18n="fc_organizer">Sei un organizzatore?</a>
-      <a data-i18n="fc_faq">FAQ</a>
-      <a data-i18n="fc_contact">Contatti</a>
-    </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer_legal">Legale</h4>
-      <a data-i18n="fc_privacy">Privacy Policy</a>
-      <a data-i18n="fc_terms">Termini di Servizio</a>
-      <a data-i18n="fc_cookies">Cookie Policy</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span class="footer-copy" data-i18n="footer_copy">© 2025 NightPass. Tutti i diritti riservati.</span>
-    <div class="footer-badges">
-      <span class="footer-badge">🔒 SSL</span>
-      <span class="footer-badge">✓ Pagamenti sicuri</span>
-    </div>
-  </div>
-</footer>
-
-<!-- TICKET MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal" id="modal">
-    <div id="step1" class="checkout-step active">
-      <div class="modal-header">
-        <div>
-          <div class="modal-event-title" id="modalTitle"></div>
-          <div class="modal-event-sub" id="modalSub"></div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--electric);margin-bottom:1rem;" data-i18n="sel_ticket">Seleziona Biglietto</p>
-        <div class="ticket-types" id="ticketTypes"></div>
-        <div class="ticket-qty">
-          <span class="qty-label" data-i18n="qty">Quantità</span>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty(-1)">−</button>
-            <span class="qty-num" id="qtyNum">1</span>
-            <button class="qty-btn" onclick="changeQty(1)">+</button>
-          </div>
-        </div>
-        <div class="order-summary">
-          <div class="summary-row"><span data-i18n="subtotal">Subtotale</span><span id="summarySubtotal">€0.00</span></div>
-          <div class="summary-row"><span data-i18n="fees">Diritti di prevendita</span><span id="summaryFees">€0.00</span></div>
-          <div class="summary-total"><span data-i18n="total">Totale</span><span class="price" id="summaryTotal">€0.00</span></div>
-        </div>
-        <button class="btn-checkout" onclick="goToCheckout()" data-i18n="proceed">Procedi all'acquisto →</button>
-      </div>
-    </div>
-
-    <div id="step2" class="checkout-step">
-      <div class="modal-header">
-        <div><div class="modal-event-title" data-i18n="your_data">I tuoi dati</div></div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" data-i18n="fname">Nome</label>
-            <input class="form-input" type="text" id="fname" placeholder="Mario">
-          </div>
-          <div class="form-group">
-            <label class="form-label" data-i18n="lname">Cognome</label>
-            <input class="form-input" type="text" id="lname" placeholder="Rossi">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" type="email" id="email" placeholder="mario@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="phone">Telefono</label>
-          <input class="form-input" type="tel" id="phone" placeholder="+39 333 000 0000">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="card">Numero Carta</label>
-          <input class="form-input" type="text" id="card" placeholder="4242 4242 4242 4242" maxlength="19">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" data-i18n="expiry">Scadenza</label>
-            <input class="form-input" type="text" id="expiry" placeholder="MM/AA" maxlength="5">
-          </div>
-          <div class="form-group">
-            <label class="form-label">CVV</label>
-            <input class="form-input" type="text" id="cvv" placeholder="123" maxlength="3">
-          </div>
-        </div>
-        <button class="btn-checkout" onclick="completeOrder()" data-i18n="confirm_pay">Conferma e Paga →</button>
-        <button class="btn-outline" style="width:100%;margin-top:.75rem" onclick="goBack()" data-i18n="go_back">← Torna indietro</button>
-      </div>
-    </div>
-
-    <div id="step3" class="checkout-step">
-      <div class="modal-body">
-        <div class="success-screen">
-          <div class="success-icon">✓</div>
-          <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:.5rem" data-i18n="success_title">Acquisto Completato!</h2>
-          <p style="color:var(--text2);margin-bottom:1.5rem" data-i18n="success_sub">Il tuo biglietto è stato inviato via email. Controlla la tua casella di posta.</p>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;font-family:'Orbitron',sans-serif;">
-            <div style="font-size:.7rem;color:var(--text3);margin-bottom:.3rem">NIGHTPASS ID</div>
-            <div style="font-size:1.1rem;color:var(--electric)" id="ticketId"></div>
-          </div>
-          <button class="btn-checkout" onclick="closeModal()" data-i18n="close_modal">Chiudi</button>
-        </div>
-      </div>
+    <!-- REGISTER -->
+    <div id="fReg" style="display:none">
+      <div class="f-wrap"><label class="f-label">Nome completo</label><input type="text" class="f-input" id="rName" placeholder="Mario Rossi" autocomplete="name"/></div>
+      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="rEmail" placeholder="tua@email.it" autocomplete="email"/></div>
+      <div class="f-wrap" style="position:relative"><label class="f-label">Password</label><input type="password" class="f-input" id="rPass" placeholder="Min 6 caratteri" autocomplete="new-password" style="padding-right:44px"/><span class="f-eye" onclick="togEye('rPass',this)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span></div>
+      <div id="rErr" style="color:#f87171;font-size:13px;margin:-8px 0 10px;display:none;border-radius:8px;background:rgba(248,113,113,.1);padding:8px 12px;"></div>
+      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="doReg()">Crea account gratuito</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- USER DROPDOWN -->
+<div class="glass-dark dd" id="userDD">
+  <div style="padding:14px 15px;border-bottom:1px solid rgba(255,255,255,.06);">
+    <div style="font-size:13px;font-weight:600;" id="ddName">—</div>
+    <div style="font-size:12px;color:var(--text-dim);" id="ddEmail">—</div>
+  </div>
+  <div class="dd-item" onclick="navigate('passes');closeDd()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a3 3 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>I miei Pass</div>
+  <div class="dd-item red" onclick="doLogout()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Esci</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo"><span class="logo-n">NIGHT</span><span class="logo-p">PASS</span></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="pill pill-b au d1"><div class="dot"></div><span>Live</span></div>
+    <div class="avatar-btn" id="avatarBtn" onclick="toggleDD()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- HOME -->
+<section class="section active" id="sHome">
+  <div style="padding-top:10px;margin-bottom:28px;">
+    <div class="pill pill-b au d1" style="margin-bottom:14px;"><div class="dot"></div><span>Milano · Questa Settimana</span></div>
+    <div class="hero-title au d2"><span style="color:#fff">SENTI</span><br><span style="color:var(--blue-light)">LA</span><br><span style="color:#fff">NOTTE.</span></div>
+    <div style="font-size:14px;color:var(--text-dim);margin-top:10px;" class="au d3">Ticketing per club, rave e cultura underground</div>
+  </div>
+  <div class="search-bar au d3" style="margin-bottom:20px;">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="s-input" id="sInput" placeholder="Cerca eventi, artisti, venue…" oninput="filterEv(this.value)"/>
+  </div>
+  <div class="g-scroll au d4" style="margin-bottom:24px;">
+    <div class="g-chip active" onclick="setGenre(this,'tutti')">✦ Tutti</div>
+    <div class="g-chip" onclick="setGenre(this,'techno')">Techno</div>
+    <div class="g-chip" onclick="setGenre(this,'house')">House</div>
+    <div class="g-chip" onclick="setGenre(this,'jungle')">Drum & Bass</div>
+    <div class="g-chip" onclick="setGenre(this,'ambient')">Ambient</div>
+    <div class="g-chip" onclick="setGenre(this,'rave')">Rave</div>
+  </div>
+  <div class="sec-lbl au d4" style="margin-bottom:14px;">🔥 Eventi caldi</div>
+  <div class="ev-grid au d5" id="evGrid"></div>
+  <div style="margin-top:30px;">
+    <div class="sec-lbl" style="margin-bottom:14px;">📅 In arrivo</div>
+    <div class="h-scroll" id="upStrip"></div>
+  </div>
+</section>
+
+<!-- EVENT -->
+<section class="section" id="sEvent"><div id="evDetail"></div></section>
+
+<!-- CHECKOUT -->
+<section class="section" id="sCheckout"><div id="checkoutC"></div></section>
+
+<!-- TICKET -->
+<section class="section" id="sTicket"><div id="ticketC"></div></section>
+
+<!-- SEARCH -->
+<section class="section" id="sSearch">
+  <div style="padding-top:10px;">
+    <div class="sec-lbl" style="margin-bottom:8px;">🔍 Esplora</div>
+    <div class="hero-title" style="font-size:clamp(38px,10vw,58px);margin-bottom:20px;">TROVA<br><span style="color:var(--blue-light)">IL TUO</span><br>EVENTO</div>
+    <div class="search-bar" style="margin-bottom:22px;">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="s-input" id="sInput2" placeholder="Cerca…" oninput="filterEv(this.value)"/>
+    </div>
+    <div class="ev-grid" id="srGrid"></div>
+  </div>
+</section>
+
+<!-- PASSES -->
+<section class="section" id="sPasses">
+  <div style="padding-top:10px;">
+    <div class="sec-lbl" style="margin-bottom:8px;">🎟 I miei Pass</div>
+    <div class="hero-title" style="font-size:clamp(38px,10vw,58px);margin-bottom:24px;">MY<br><span style="color:var(--blue-light)">PASSES</span></div>
+    <div id="passesList"></div>
+  </div>
+</section>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="navH" onclick="go('home')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg>
+    Home
+  </button>
+  <button class="nav-item" id="navS" onclick="go('search')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/></svg>
+    Cerca
+  </button>
+  <button class="nav-item" id="navP" onclick="goPasses()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a3 3 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+    I miei Pass
+  </button>
+</nav>
 
 <script>
-// ========== TRANSLATIONS ==========
-const i18n = {
-  it: {
-    nav_events:"Eventi", nav_features:"Perché NightPass", nav_app:"App", nav_contact:"Contatti",
-    hero_badge:"Prevendite Live Ora", hero_sub:"La piattaforma italiana per le prevendite di eventi, concerti, club e festival. Acquista il tuo biglietto in pochi secondi.",
-    hero_cta1:"Scopri gli eventi →", hero_cta2:"Scarica l'app",
-    stat1:"Biglietti venduti", stat2:"Eventi attivi", stat3:"Soddisfazione", stat4:"Città coperte",
-    events_tag:"Prevendite", events_title:"EVENTI IN ARRIVO", events_sub:"Scegli il tuo evento e acquista subito il biglietto",
-    filter_all:"Tutti", filter_club:"Club", filter_concert:"Concerti", filter_festival:"Festival", filter_electronic:"Elettronica",
-    feat_tag:"Perché sceglierci", feat_title:"NIGHTPASS È DIVERSO",
-    f1t:"Acquisto in 10 secondi", f1d:"Nessuna attesa, nessun coda. Compra il tuo biglietto in meno di 10 secondi con la nostra app.",
-    f2t:"100% Sicuro", f2d:"Pagamenti crittografati, biglietti digitali anti-contraffazione con QR code univoco.",
-    f3t:"Sempre con te", f3d:"Il biglietto è nel tuo smartphone. Nessuna stampa, nessun rischio di perdita.",
-    f4t:"Supporto 24/7", f4d:"Il nostro team è sempre disponibile per aiutarti prima, durante e dopo l'evento.",
-    f5t:"Biglietti Nominativi", f5d:"I tuoi biglietti sono al sicuro: solo tu puoi accedere all'evento con il tuo documento.",
-    f6t:"Multilingua", f6d:"Disponibile in italiano, inglese e spagnolo. Per vivere la notte senza frontiere.",
-    footer_desc:"La tua piattaforma per le prevendite di eventi. Musica, club, festival e molto altro.",
-    footer_events:"Eventi", footer_info:"Info", footer_legal:"Legale",
-    fc_club:"Club & Discoteche", fc_concerts:"Concerti", fc_festival:"Festival", fc_special:"Serate Speciali",
-    fc_howit:"Come funziona", fc_organizer:"Sei un organizzatore?", fc_faq:"FAQ", fc_contact:"Contatti",
-    fc_privacy:"Privacy Policy", fc_terms:"Termini di Servizio", fc_cookies:"Cookie Policy",
-    footer_copy:"© 2025 NightPass. Tutti i diritti riservati.",
-    sel_ticket:"Seleziona Biglietto", qty:"Quantità", subtotal:"Subtotale", fees:"Diritti di prevendita", total:"Totale",
-    proceed:"Procedi all'acquisto →", your_data:"I tuoi dati", fname:"Nome", lname:"Cognome", phone:"Telefono",
-    card:"Numero Carta", expiry:"Scadenza", confirm_pay:"Conferma e Paga →", go_back:"← Torna indietro",
-    success_title:"Acquisto Completato!", success_sub:"Il tuo biglietto è stato inviato via email. Controlla la tua casella di posta.",
-    close_modal:"Chiudi"
-  },
-  en: {
-    nav_events:"Events", nav_features:"Why NightPass", nav_app:"App", nav_contact:"Contact",
-    hero_badge:"Live Presales Now", hero_sub:"The Italian platform for event presales, concerts, clubs and festivals. Buy your ticket in seconds.",
-    hero_cta1:"Discover events →", hero_cta2:"Download the app",
-    stat1:"Tickets sold", stat2:"Active events", stat3:"Satisfaction", stat4:"Cities covered",
-    events_tag:"Presales", events_title:"UPCOMING EVENTS", events_sub:"Choose your event and buy your ticket now",
-    filter_all:"All", filter_club:"Club", filter_concert:"Concerts", filter_festival:"Festival", filter_electronic:"Electronic",
-    feat_tag:"Why choose us", feat_title:"NIGHTPASS IS DIFFERENT",
-    f1t:"Buy in 10 seconds", f1d:"No waiting, no queues. Buy your ticket in less than 10 seconds with our app.",
-    f2t:"100% Secure", f2d:"Encrypted payments, anti-counterfeiting digital tickets with unique QR code.",
-    f3t:"Always with you", f3d:"Your ticket is in your smartphone. No printing, no risk of loss.",
-    f4t:"24/7 Support", f4d:"Our team is always available to help you before, during and after the event.",
-    f5t:"Named Tickets", f5d:"Your tickets are safe: only you can access the event with your ID.",
-    f6t:"Multilingual", f6d:"Available in Italian, English and Spanish. To experience the night without borders.",
-    footer_desc:"Your platform for event presales. Music, clubs, festivals and much more.",
-    footer_events:"Events", footer_info:"Info", footer_legal:"Legal",
-    fc_club:"Clubs & Discos", fc_concerts:"Concerts", fc_festival:"Festivals", fc_special:"Special Nights",
-    fc_howit:"How it works", fc_organizer:"Are you an organizer?", fc_faq:"FAQ", fc_contact:"Contact",
-    fc_privacy:"Privacy Policy", fc_terms:"Terms of Service", fc_cookies:"Cookie Policy",
-    footer_copy:"© 2025 NightPass. All rights reserved.",
-    sel_ticket:"Select Ticket", qty:"Quantity", subtotal:"Subtotal", fees:"Service fees", total:"Total",
-    proceed:"Proceed to purchase →", your_data:"Your details", fname:"First Name", lname:"Last Name", phone:"Phone",
-    card:"Card Number", expiry:"Expiry", confirm_pay:"Confirm & Pay →", go_back:"← Go back",
-    success_title:"Purchase Complete!", success_sub:"Your ticket has been sent by email. Check your inbox.",
-    close_modal:"Close"
-  },
-  es: {
-    nav_events:"Eventos", nav_features:"Por qué NightPass", nav_app:"App", nav_contact:"Contacto",
-    hero_badge:"Preventa en Vivo", hero_sub:"La plataforma italiana para preventa de eventos, conciertos, clubs y festivales. Compra tu entrada en segundos.",
-    hero_cta1:"Descubrir eventos →", hero_cta2:"Descargar la app",
-    stat1:"Entradas vendidas", stat2:"Eventos activos", stat3:"Satisfacción", stat4:"Ciudades cubiertas",
-    events_tag:"Preventa", events_title:"PRÓXIMOS EVENTOS", events_sub:"Elige tu evento y compra tu entrada ahora",
-    filter_all:"Todos", filter_club:"Club", filter_concert:"Conciertos", filter_festival:"Festival", filter_electronic:"Electrónica",
-    feat_tag:"Por qué elegirnos", feat_title:"NIGHTPASS ES DIFERENTE",
-    f1t:"Compra en 10 segundos", f1d:"Sin esperas, sin colas. Compra tu entrada en menos de 10 segundos.",
-    f2t:"100% Seguro", f2d:"Pagos cifrados, entradas digitales antifalsiifcación con código QR único.",
-    f3t:"Siempre contigo", f3d:"La entrada está en tu smartphone. Sin impresión, sin riesgo de pérdida.",
-    f4t:"Soporte 24/7", f4d:"Nuestro equipo está siempre disponible para ayudarte antes, durante y después del evento.",
-    f5t:"Entradas Nominativas", f5d:"Tus entradas están seguras: solo tú puedes acceder al evento con tu documento.",
-    f6t:"Multilingüe", f6d:"Disponible en italiano, inglés y español. Para vivir la noche sin fronteras.",
-    footer_desc:"Tu plataforma para preventa de eventos. Música, clubs, festivales y mucho más.",
-    footer_events:"Eventos", footer_info:"Info", footer_legal:"Legal",
-    fc_club:"Clubs & Discotecas", fc_concerts:"Conciertos", fc_festival:"Festivales", fc_special:"Noches Especiales",
-    fc_howit:"Cómo funciona", fc_organizer:"¿Eres organizador?", fc_faq:"FAQ", fc_contact:"Contacto",
-    fc_privacy:"Política de Privacidad", fc_terms:"Términos de Servicio", fc_cookies:"Política de Cookies",
-    footer_copy:"© 2025 NightPass. Todos los derechos reservados.",
-    sel_ticket:"Seleccionar Entrada", qty:"Cantidad", subtotal:"Subtotal", fees:"Cargos por servicio", total:"Total",
-    proceed:"Proceder a la compra →", your_data:"Tus datos", fname:"Nombre", lname:"Apellido", phone:"Teléfono",
-    card:"Número de Tarjeta", expiry:"Vencimiento", confirm_pay:"Confirmar y Pagar →", go_back:"← Volver",
-    success_title:"¡Compra Completada!", success_sub:"Tu entrada ha sido enviada por correo. Revisa tu bandeja de entrada.",
-    close_modal:"Cerrar"
-  }
-};
-let currentLang = 'it';
-function setLang(lang) {
-  currentLang = lang;
-  document.documentElement.lang = lang;
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (i18n[lang][key]) el.textContent = i18n[lang][key];
-  });
-  const labels = {it:'🌐 IT', en:'🌐 EN', es:'🌐 ES'};
-  document.getElementById('langBtn').textContent = labels[lang];
-  document.querySelectorAll('.lang-dropdown button').forEach((b,i) => {
-    b.classList.toggle('active', ['it','en','es'][i] === lang);
-  });
-  document.getElementById('langMenu').classList.remove('open');
-  renderEvents(currentFilter);
-}
-function toggleLangMenu() {
-  document.getElementById('langMenu').classList.toggle('open');
-}
-document.addEventListener('click', e => {
-  if (!e.target.closest('.lang-selector')) document.getElementById('langMenu').classList.remove('open');
-});
-
-// ========== THEME ==========
-let isDark = true;
-function toggleTheme() {
-  isDark = !isDark;
-  document.body.classList.toggle('light-mode', !isDark);
-  document.getElementById('themeBtn').textContent = isDark ? '☾ Dark' : '☀ Light';
-}
-
-// ========== EVENTS DATA ==========
-const eventsData = [
-  { id:1, cat:'club', emoji:'🌌', gradient:'linear-gradient(135deg,#020a1f,#0057ff)', name:{it:"NEON DISTRICT",en:"NEON DISTRICT",es:"NEON DISTRICT"}, loc:{it:"Cocoricò, Riccione",en:"Cocoricò, Riccione",es:"Cocoricò, Riccione"}, date:"Sab 12 Lug 2025", time:"23:00", badge:"available", tickets:[{name:{it:"Ingresso Standard",en:"Standard Entry",es:"Entrada Estándar"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:18},{name:{it:"VIP Table",en:"VIP Table",es:"Mesa VIP"},desc:{it:"Tavolo riservato + bottiglia",en:"Reserved table + bottle",es:"Mesa reservada + botella"},price:85}] },
-  { id:2, cat:'concert', emoji:'🎸', gradient:'linear-gradient(135deg,#0a0015,#6600ff)', name:{it:"ROCK ALIVE TOUR",en:"ROCK ALIVE TOUR",es:"ROCK ALIVE TOUR"}, loc:{it:"Arena di Verona",en:"Arena di Verona",es:"Arena di Verona"}, date:"Dom 20 Lug 2025", time:"21:00", badge:"few", tickets:[{name:{it:"Platea",en:"Floor",es:"Platea"},desc:{it:"Posto numerato",en:"Numbered seat",es:"Asiento numerado"},price:45},{name:{it:"Tribuna Gold",en:"Gold Tribune",es:"Tribuna Gold"},desc:{it:"Vista premium",en:"Premium view",es:"Vista premium"},price:95}] },
-  { id:3, cat:'electronic', emoji:'🔊', gradient:'linear-gradient(135deg,#000d20,#00b4ff)', name:{it:"VOLTAGE FEST",en:"VOLTAGE FEST",es:"VOLTAGE FEST"}, loc:{it:"Fabrique, Milano",en:"Fabrique, Milano",es:"Fabrique, Milán"}, date:"Ven 18 Lug 2025", time:"22:00", badge:"available", tickets:[{name:{it:"Early Bird",en:"Early Bird",es:"Early Bird"},desc:{it:"Disponibilità limitata",en:"Limited availability",es:"Disponibilidad limitada"},price:22},{name:{it:"Standard",en:"Standard",es:"Estándar"},desc:{it:"Ingresso serata",en:"Evening entry",es:"Entrada noche"},price:30}] },
-  { id:4, cat:'festival', emoji:'🌅', gradient:'linear-gradient(135deg,#100020,#ff5500)', name:{it:"SUNSET FESTIVAL",en:"SUNSET FESTIVAL",es:"SUNSET FESTIVAL"}, loc:{it:"Spiagge, Gallipoli",en:"Spiagge, Gallipoli",es:"Playas, Gallipoli"}, date:"26–28 Lug 2025", time:"18:00", badge:"available", tickets:[{name:{it:"Day Pass",en:"Day Pass",es:"Pase Diario"},desc:{it:"Un giorno",en:"One day",es:"Un día"},price:35},{name:{it:"Full Pass 3 giorni",en:"3-Day Full Pass",es:"Pase 3 Días"},price:89,desc:{it:"Tutti e tre i giorni",en:"All three days",es:"Los tres días"}}] },
-  { id:5, cat:'club', emoji:'💜', gradient:'linear-gradient(135deg,#0a001a,#9900ff)', name:{it:"AFTERLIFE NIGHT",en:"AFTERLIFE NIGHT",es:"AFTERLIFE NIGHT"}, loc:{it:"Amnesia, Ibiza (IT Bus)",en:"Amnesia, Ibiza (IT Bus)",es:"Amnesia, Ibiza (Bus IT)"}, date:"Sab 5 Ago 2025", time:"00:00", badge:"sold", tickets:[{name:{it:"Sold Out",en:"Sold Out",es:"Agotado"},desc:{it:"Esaurito",en:"Sold out",es:"Agotado"},price:0}] },
-  { id:6, cat:'electronic', emoji:'⚡', gradient:'linear-gradient(135deg,#001020,#0057ff)', name:{it:"PULSE UNDERGROUND",en:"PULSE UNDERGROUND",es:"PULSE UNDERGROUND"}, loc:{it:"Volt Club, Roma",en:"Volt Club, Roma",es:"Volt Club, Roma"}, date:"Ven 25 Lug 2025", time:"23:30", badge:"few", tickets:[{name:{it:"Ingresso",en:"Entry",es:"Entrada"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:15},{name:{it:"Guest List",en:"Guest List",es:"Lista de Invitados"},desc:{it:"Nome in lista",en:"Name on list",es:"Nombre en lista"},price:10}] },
-   {id:7, cat:'club', emoji:'🌌', gradient:'linear-gradient(135deg,#020a1f,#0057ff)', name:{it:"NEON DISTRICT",en:"NEON DISTRICT",es:"NEON DISTRICT"}, loc:{it:"Cocoricò, Riccione",en:"Cocoricò, Riccione",es:"Cocoricò, Riccione"}, date:"Sab 12 Lug 2025", time:"23:00", badge:"available", tickets:[{name:{it:"Ingresso Standard",en:"Standard Entry",es:"Entrada Estándar"},desc:{it:"Accesso generale",en:"General access",es:"Acceso general"},price:18},{name:{it:"VIP Table",en:"VIP Table",es:"Mesa VIP"},desc:{it:"Tavolo riservato + bottiglia",en:"Reserved table + bottle",es:"Mesa reservada + botella"},price:85}] },
-  { id:8, cat:'concert', emoji:'🎸', gradient:'linear-gradient(135deg,#0a0015,#6600ff)', name:{it:"ROCK ALIVE TOUR",en:"ROCK ALIVE TOUR",es:"ROCK ALIVE TOUR"}, loc:{it:"Arena di Verona",en:"Arena di Verona",es:"Arena di Verona"}, date:"Dom 20 Lug 2025", time:"21:00", badge:"few", tickets:[{name:{it:"Platea",en:"Floor",es:"Platea"},desc:{it:"Posto numerato",en:"Numbered seat",es:"Asiento numerado"},price:45},{name:{it:"Tribuna Gold",en:"Gold Tribune",es:"Tribuna Gold"},desc:{it:"Vista premium",en:"Premium view",es:"Vista premium"},price:95}] },
+// ═══════════════ DATA ═══════════════
+const EVENTS=[
+  {id:'E001',title:'VOID RAVE',genre:'techno',date:'Sab 19 Apr 2025',time:'23:00 → 07:00',venue:'Warehouse 23',city:'Milano',desc:'Un viaggio sonoro nei territori più oscuri del techno industriale. Lineup internazionale per una notte senza compromessi. Il warehouse sarà trasformato con installazioni laser e un sistema audio da 50.000W che sposterà il suolo sotto i tuoi piedi.',img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:12,left:3,perks:'Ingresso base · Disponibilità limitata'},{type:'General Admission',price:18,left:120,perks:'Ingresso standard · Tutte le aree'},{type:'VIP Pack',price:45,left:15,perks:'Area VIP · Drink incluso · Priority entry'}]},
+  {id:'E002',title:'DEEP SPACE',genre:'house',date:'Dom 20 Apr 2025',time:'22:00 → 05:00',venue:'Fabric Club',city:'Roma',desc:'Un viaggio nella deep house più ricercata d\'Europa. DJ set continui di 12 ore da artisti selezionati. Tre floor con sistemi audio differenti, ogni sala un\'esperienza sonora unica.',img:'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:8,left:0,perks:'ESAURITO'},{type:'General Admission',price:15,left:85,perks:'Ingresso standard · Tutti i floor'},{type:'VIP Pack',price:38,left:8,perks:'Lounge privata · Open bar 2h · Goodie bag'}]},
+  {id:'E003',title:'CONCRETE JUNGLE',genre:'jungle',date:'Ven 25 Apr 2025',time:'22:30 → 06:00',venue:'Ex-Dogana',city:'Firenze',desc:'Il Drum & Bass torna alle sue radici jungle. Un evento storico con i pionieri del genere e le nuove generazioni di MC e producer. Soundsystem roots, ambiente underground puro.',img:'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:10,left:20,perks:'Ingresso anticipato · Risparmia il 40%'},{type:'General Admission',price:16,left:200,perks:'Ingresso standard'},{type:'VIP Pack',price:40,left:25,perks:'Meet & Greet · VIP Bar · Merch esclusivo'}]},
+  {id:'E004',title:'NULL WAVE',genre:'ambient',date:'Sab 26 Apr 2025',time:'20:00 → 04:00',venue:'Spazio Mil',city:'Sesto S.G.',desc:'Ambient electronics e drone music in uno spazio industriale trasformato in cattedrale sonora. Performance live di artisti visivi e musicali in dialogo continuo.',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:9,left:0,perks:'ESAURITO'},{type:'General Admission',price:14,left:60,perks:'Ingresso + installazioni'},{type:'VIP Pack',price:35,left:10,perks:'Catalogo esclusivo · Seat riservato · Reception'}]},
+  {id:'E005',title:'ACID BATH',genre:'rave',date:'Sab 3 Mag 2025',time:'00:00 → 12:00',venue:'Location Segreta',city:'Torino',desc:'La location sarà rivelata 24h prima via SMS. Un rave che inizia a mezzanotte e termina solo quando il sole è alto nel cielo. 12 ore di acid house, trance e techno senza sosta.',img:'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:15,left:5,perks:'LAST 5 · Unlock location early'},{type:'General Admission',price:22,left:300,perks:'12h access · Full lineup'},{type:'VIP Pack',price:55,left:20,perks:'Pre-rave dinner · Camping zone · Priority'}]},
+  {id:'E006',title:'HEXADECIMAL',genre:'techno',date:'Dom 4 Mag 2025',time:'22:00 → 06:00',venue:'OGR Torino',city:'Torino',desc:'L\'OGR apre le sue porte per una notte di techno sperimentale. Cinque artisti internazionali per un viaggio nel suono del futuro. Sistema audio d\'avanguardia e visual art immersiva.',img:'https://images.unsplash.com/photo-1526478806334-5fd488fcaabc?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:18,left:0,perks:'ESAURITO'},{type:'General Admission',price:25,left:150,perks:'Accesso completo · Main room + Annex'},{type:'VIP Pack',price:60,left:12,perks:'Balconata riservata · 3 drink · Artist meet'}]}
 ];
 
-let currentFilter = 'all';
-function filterEvents(cat, btn) {
-  currentFilter = cat;
-  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderEvents(cat);
+// ═══════════════ STATE ═══════════════
+let users   = JSON.parse(localStorage.getItem('np_users')||'[]');
+let curUser = JSON.parse(localStorage.getItem('np_user')||'null');
+let passes  = JSON.parse(localStorage.getItem('np_passes')||'[]');
+let selEv=null, selTk=null, curGenre='tutti';
+
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+// ═══════════════ AUTH ═══════════════
+function updateAvatar(){
+  const btn=document.getElementById('avatarBtn');
+  if(curUser){
+    btn.innerHTML=`<span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${curUser.name.charAt(0).toUpperCase()}</span>`;
+    btn.style.cssText='width:38px;height:38px;border-radius:50%;background:var(--blue);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:#fff;box-shadow:0 0 16px rgba(37,99,235,.5);';
+    document.getElementById('ddName').textContent=curUser.name;
+    document.getElementById('ddEmail').textContent=curUser.email;
+  } else {
+    btn.innerHTML=`<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>`;
+    btn.style.cssText='width:38px;height:38px;border-radius:50%;background:var(--blue-soft);border:1.5px solid var(--blue-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--blue-light);';
+  }
 }
-function renderEvents(cat) {
-  const grid = document.getElementById('eventsGrid');
-  const filtered = cat === 'all' ? eventsData : eventsData.filter(e => e.cat === cat);
-  const badgeLabels = {available:{it:"Disponibile",en:"Available",es:"Disponible"}, few:{it:"Ultimi posti",en:"Few left",es:"Últimos"}, sold:{it:"Sold Out",en:"Sold Out",es:"Agotado"}};
-  const buyLabels = {it:"Acquista",en:"Buy",es:"Comprar"};
-  grid.innerHTML = filtered.map(ev => `
-    <div class="event-card" data-cat="${ev.cat}" onclick="openModal(${ev.id})">
-      <div class="card-img">
-        <div class="card-img-bg" style="background:${ev.gradient}">${ev.emoji}</div>
-        <div class="card-badge ${ev.badge==='sold'?'sold':ev.badge==='few'?'few':''}">${badgeLabels[ev.badge][currentLang]}</div>
-      </div>
-      <div class="card-body">
-        <div class="card-genre">${ev.cat.toUpperCase()}</div>
-        <div class="card-title">${ev.name[currentLang]}</div>
-        <div class="card-meta">
-          <span>📍 ${ev.loc[currentLang]}</span>
-          <span>📅 ${ev.date}</span>
-          <span>🕙 ${ev.time}</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="card-price">
-          da €${Math.min(...ev.tickets.filter(t=>t.price>0).map(t=>t.price)) || 0}
-          <span>${ev.tickets[0].desc[currentLang]}</span>
-        </div>
-        ${ev.badge !== 'sold' ? `<button class="btn-buy" onclick="event.stopPropagation();openModal(${ev.id})">${buyLabels[currentLang]}</button>` : `<button class="btn-buy" style="background:rgba(255,60,60,0.3);cursor:not-allowed">Sold Out</button>`}
-      </div>
-    </div>
-  `).join('');
+function toggleDD(){
+  if(!curUser){openAuth();return;}
+  document.getElementById('userDD').classList.toggle('show');
+}
+function closeDd(){document.getElementById('userDD').classList.remove('show');}
+document.addEventListener('click',e=>{if(!e.target.closest('#avatarBtn')&&!e.target.closest('#userDD'))closeDd();});
+
+function openAuth(){document.getElementById('authModal').classList.add('show');}
+function closeAuth(){document.getElementById('authModal').classList.remove('show');}
+function closeAuthOut(e){if(e.target===document.getElementById('authModal'))closeAuth();}
+
+function switchTab(t){
+  document.getElementById('tabL').classList.toggle('active',t==='login');
+  document.getElementById('tabR').classList.toggle('active',t==='reg');
+  document.getElementById('fLogin').style.display=t==='login'?'':'none';
+  document.getElementById('fReg').style.display=t==='reg'?'':'none';
+  ['lErr','rErr'].forEach(id=>{document.getElementById(id).style.display='none';});
 }
 
-// ========== MODAL ==========
-let selectedEvent = null;
-let selectedTicket = null;
-let qty = 1;
-const FEE_RATE = 0.1;
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
 
-function openModal(id) {
-  selectedEvent = eventsData.find(e => e.id === id);
-  if (!selectedEvent || selectedEvent.badge === 'sold') return;
-  qty = 1;
-  document.getElementById('qtyNum').textContent = 1;
-  document.getElementById('modalTitle').textContent = selectedEvent.name[currentLang];
-  document.getElementById('modalSub').textContent = `${selectedEvent.loc[currentLang]} • ${selectedEvent.date} ${selectedEvent.time}`;
-  renderTicketTypes();
-  showStep(1);
-  document.getElementById('modalOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+function doLogin(){
+  const email=document.getElementById('lEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('lPass').value;
+  document.getElementById('lErr').style.display='none';
+  if(!email||!pass)return showErr('lErr','Compila tutti i campi.');
+  if(pass.length<6)return showErr('lErr','Password troppo corta (min 6 caratteri).');
+  const u=users.find(u=>u.email===email&&u.password===pass);
+  if(!u)return showErr('lErr','Email o password non corretti. Registrati se non hai un account.');
+  curUser={name:u.name,email:u.email};
+  save('np_user',curUser);
+  closeAuth();
+  updateAvatar();
+  toast(`Bentornato, ${u.name.split(' ')[0]}! 👋`);
 }
-function renderTicketTypes() {
-  const container = document.getElementById('ticketTypes');
-  const available = selectedEvent.tickets.filter(t => t.price > 0);
-  container.innerHTML = available.map((t,i) => `
-    <div class="ticket-type ${i===0?'selected':''}" onclick="selectTicket(${i},this)">
-      <div class="ticket-type-info">
-        <div class="ticket-type-name">${t.name[currentLang]}</div>
-        <div class="ticket-type-desc">${t.desc[currentLang]}</div>
-      </div>
-      <div class="ticket-type-price">€${t.price}</div>
-    </div>
-  `).join('');
-  selectedTicket = available[0];
-  updateSummary();
+
+function doReg(){
+  const name=document.getElementById('rName').value.trim();
+  const email=document.getElementById('rEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('rPass').value;
+  document.getElementById('rErr').style.display='none';
+  if(!name||!email||!pass)return showErr('rErr','Compila tutti i campi.');
+  if(!email.includes('@'))return showErr('rErr','Email non valida.');
+  if(pass.length<6)return showErr('rErr','Password troppo corta (min 6 caratteri).');
+  if(users.find(u=>u.email===email))return showErr('rErr','Email già registrata. Prova ad accedere.');
+  users.push({name,email,password:pass});
+  save('np_users',users);
+  curUser={name,email};
+  save('np_user',curUser);
+  closeAuth();
+  updateAvatar();
+  toast(`Benvenuto su NIGHTPASS, ${name.split(' ')[0]}! 🎉`);
 }
-function selectTicket(i, el) {
-  document.querySelectorAll('.ticket-type').forEach(t => t.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTicket = selectedEvent.tickets.filter(t=>t.price>0)[i];
-  updateSummary();
+
+function doLogout(){
+  curUser=null;
+  localStorage.removeItem('np_user');
+  closeDd();
+  updateAvatar();
+  go('home');
+  toast('Sei uscito dal tuo account.');
 }
-function changeQty(delta) {
-  qty = Math.max(1, Math.min(10, qty + delta));
-  document.getElementById('qtyNum').textContent = qty;
-  updateSummary();
+
+function togEye(id,btn){
+  const inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
 }
-function updateSummary() {
-  if (!selectedTicket) return;
-  const sub = selectedTicket.price * qty;
-  const fees = sub * FEE_RATE;
-  const total = sub + fees;
-  document.getElementById('summarySubtotal').textContent = `€${sub.toFixed(2)}`;
-  document.getElementById('summaryFees').textContent = `€${fees.toFixed(2)}`;
-  document.getElementById('summaryTotal').textContent = `€${total.toFixed(2)}`;
+
+// ═══════════════ TOAST ═══════════════
+function toast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);background:rgba(8,8,22,.94);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 20px;font-size:14px;font-weight:500;color:#fff;z-index:500;white-space:nowrap;transition:all .3s ease;opacity:0;max-width:90vw;text-align:center;';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(12px)';setTimeout(()=>t.remove(),300);},2800);
 }
-function goToCheckout() { showStep(2); }
-function goBack() { showStep(1); }
-function showStep(n) {
-  ['step1','step2','step3'].forEach((s,i) => {
-    document.getElementById(s).classList.toggle('active', i+1===n);
+
+// ═══════════════ NAVIGATE ═══════════════
+function go(sc){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={home:{s:'sHome',n:'navH'},search:{s:'sSearch',n:'navS'},passes:{s:'sPasses',n:'navP'},event:{s:'sEvent'},checkout:{s:'sCheckout'},ticket:{s:'sTicket'}};
+  const t=map[sc];if(!t)return;
+  document.getElementById(t.s).classList.add('active');
+  if(t.n)document.getElementById(t.n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(sc==='search')renderSrGrid();
+  if(sc==='passes')renderPasses();
+}
+function goPasses(){if(!curUser){openAuth();return;}go('passes');}
+
+// ═══════════════ RENDER GRID ═══════════════
+function renderGrid(list,id){
+  const g=document.getElementById(id);if(!g)return;
+  if(!list.length){g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--text-dim);font-size:14px;">Nessun evento trovato</div>`;return;}
+  g.innerHTML=list.map((ev,i)=>{
+    const mp=Math.min(...ev.tickets.filter(t=>t.left>0).map(t=>t.price));
+    return`<div class="ev-card au" style="animation-delay:${i*.06}s;opacity:0;" onclick="openEvent('${ev.id}')">
+      <div class="ev-img-wrap"><img class="ev-img" src="${ev.img}" alt="${ev.title}" loading="lazy"/><div class="ev-img-ov"></div><div class="ev-genre">${ev.genre}</div></div>
+      <div style="padding:12px;">
+        <div class="syne" style="font-size:17px;font-weight:700;line-height:1.1;margin-bottom:4px;">${ev.title}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:7px;">${ev.date}</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg><span style="font-size:11px;color:var(--text-dim);">${ev.city}</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:11px;color:var(--text-mute);">Da</span><span class="price-tag">${isFinite(mp)?'€'+mp:'—'}</span></div>
+      </div></div>`;
+  }).join('');
+}
+
+function renderUpstrip(){
+  const s=document.getElementById('upStrip');
+  EVENTS.slice(3).forEach(ev=>{
+    const d=document.createElement('div');d.className='ev-sm';d.onclick=()=>openEvent(ev.id);
+    d.innerHTML=`<div style="height:100px;overflow:hidden;position:relative;"><img src="${ev.img}" alt="${ev.title}" style="width:100%;height:100%;object-fit:cover;filter:brightness(.6) saturate(1.2);transition:transform .4s ease;"/><div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,18,.85) 0%,transparent 60%);"></div></div><div style="padding:10px 12px;"><div class="syne" style="font-size:15px;font-weight:700;line-height:1.1;margin-bottom:3px;">${ev.title}</div><div style="font-size:10px;color:var(--blue-light);">${ev.date.split(' ').slice(0,3).join(' ')}</div></div>`;
+    s.appendChild(d);
   });
 }
-function completeOrder() {
-  const fname = document.getElementById('fname').value;
-  const email = document.getElementById('email').value;
-  if (!fname || !email) { showToast('⚠️ Compila tutti i campi'); return; }
-  const id = 'NP-' + Math.random().toString(36).substr(2,8).toUpperCase();
-  document.getElementById('ticketId').textContent = id;
-  showStep(3);
+
+function renderSrGrid(){renderGrid(EVENTS.filter(ev=>curGenre==='tutti'||ev.genre===curGenre),'srGrid');}
+
+// ═══════════════ FILTER ═══════════════
+function filterEv(q=''){
+  const f=EVENTS.filter(ev=>(curGenre==='tutti'||ev.genre===curGenre)&&[ev.title,ev.venue,ev.city,ev.genre].some(s=>s.toLowerCase().includes(q.toLowerCase())));
+  renderGrid(f,'evGrid');renderGrid(f,'srGrid');
 }
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  setTimeout(() => showStep(1), 300);
-}
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
+function setGenre(el,g){
+  curGenre=g;
+  document.querySelectorAll('.g-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterEv(document.getElementById('sInput')?.value||'');
 }
 
-// ========== TOAST ==========
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+// ═══════════════ EVENT DETAIL ═══════════════
+function openEvent(id){
+  selEv=EVENTS.find(e=>e.id===id);if(!selEv)return;
+  selTk=null;
+  const ev=selEv;
+  const tHTML=ev.tickets.map((t,i)=>`
+    <div class="tk-opt${t.left===0?' disabled':''}" id="tk-${i}" onclick="selTicket(${i})">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div class="syne" style="font-size:15px;font-weight:700;margin-bottom:2px;">${t.type}</div>
+          <div style="font-size:12px;color:var(--text-dim);">${t.perks}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div class="price-tag">€${t.price}</div>
+          <div style="font-size:10px;color:${t.left===0?'#f87171':'var(--text-mute)'};">${t.left===0?'Esaurito':t.left+' rimasti'}</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('evDetail').innerHTML=`
+    <div class="detail-cover"><img src="${ev.img}" alt="${ev.title}"/><div class="detail-ov"></div>
+      <div class="detail-cnt">
+        <div class="pill pill-b" style="margin-bottom:8px;font-size:11px;">${ev.genre.toUpperCase()}</div>
+        <div class="syne" style="font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:.95;">${ev.title}</div>
+      </div>
+    </div>
+    <div style="padding-top:18px;">
+      <button class="back-btn" onclick="go('home')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Tutti gli eventi</button>
+      <div class="glass" style="border-radius:20px;padding:16px;margin-bottom:20px;">
+        <div class="info-row"><div class="iw"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg></div><div><div style="font-size:14px;font-weight:500;">${ev.date}</div><div style="font-size:12px;color:var(--text-dim);">${ev.time}</div></div></div>
+        <div class="info-row"><div class="iw"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg></div><div><div style="font-size:14px;font-weight:500;">${ev.venue}</div><div style="font-size:12px;color:var(--text-dim);">${ev.city}</div></div></div>
+      </div>
+      <p style="font-size:14px;line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:24px;">${ev.desc}</p>
+      <div class="sec-lbl" style="margin-bottom:14px;">🎟 Scegli il biglietto</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">${tHTML}</div>
+      <button class="btn-p" id="procBtn" style="width:100%;" disabled onclick="goCheckout()">Seleziona un biglietto per continuare</button>
+    </div>`;
+  go('event');
 }
 
-// ========== CARD FORMATTING ==========
-document.addEventListener('input', e => {
-  if (e.target.id === 'card') {
-    e.target.value = e.target.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().substring(0,19);
+function selTicket(i){
+  document.querySelectorAll('.tk-opt').forEach(e=>e.classList.remove('selected'));
+  document.getElementById(`tk-${i}`)?.classList.add('selected');
+  selTk=selEv.tickets[i];
+  const btn=document.getElementById('procBtn');
+  if(btn){btn.removeAttribute('disabled');btn.textContent=`Acquista ${selTk.type} · €${selTk.price} →`;}
+}
+
+// ═══════════════ CHECKOUT ═══════════════
+function goCheckout(){
+  if(!selTk||!selEv)return;
+  if(!curUser){openAuth();return;}
+  const ev=selEv,tk=selTk;
+  document.getElementById('checkoutC').innerHTML=`
+    <div style="padding-top:12px;">
+      <button class="back-btn" onclick="go('event')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Torna all'evento</button>
+      <div class="prog">
+        <div class="ps done"><div class="pdot">✓</div><div class="plbl">Evento</div></div>
+        <div class="ps active"><div class="pdot">2</div><div class="plbl">Checkout</div></div>
+        <div class="ps"><div class="pdot">3</div><div class="plbl">Pass</div></div>
+      </div>
+      <div class="sec-lbl" style="margin-bottom:8px;">💳 Pagamento</div>
+      <div class="syne" style="font-size:30px;font-weight:800;margin-bottom:20px;">I TUOI <span style="color:var(--blue-light)">DATI</span></div>
+      <div class="glass" style="border-radius:20px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-light);margin-bottom:12px;">Riepilogo ordine</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div class="syne" style="font-size:16px;font-weight:700;">${ev.title}</div><div style="font-size:12px;color:var(--text-dim);">${tk.type}</div></div><span class="price-tag">€${tk.price}</span></div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin:10px 0;"></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;color:var(--text-dim);">Diritti prevendita</span><span style="font-size:12px;color:var(--text-dim);">+€1.00</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;"><span style="font-size:13px;font-weight:600;">Totale</span><span class="price-tag">€${(tk.price+1).toFixed(2)}</span></div>
+      </div>
+      <div class="f-wrap"><label class="f-label">Nome su biglietto</label><input type="text" class="f-input" id="bName" value="${curUser?.name||''}" placeholder="Mario Rossi"/></div>
+      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="bEmail" value="${curUser?.email||''}" placeholder="email@esempio.it"/></div>
+      <div class="f-wrap"><label class="f-label">Numero carta (demo)</label><input type="text" class="f-input" id="bCard" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="f-wrap"><label class="f-label">Scadenza</label><input type="text" class="f-input" placeholder="MM/AA" maxlength="5"/></div>
+        <div class="f-wrap"><label class="f-label">CVV</label><input type="text" class="f-input" placeholder="123" maxlength="3"/></div>
+      </div>
+      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="pay()">🔒 Paga €${(tk.price+1).toFixed(2)} · Ottieni il Pass</button>
+      <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-mute);">Pagamento sicuro · SSL · Demo mode</div>
+    </div>`;
+  go('checkout');
+}
+
+function fmtCard(inp){let v=inp.value.replace(/\D/g,'').slice(0,16);inp.value=v.replace(/(.{4})/g,'$1 ').trim();}
+
+// ═══════════════ PAYMENT ═══════════════
+function pay(){
+  const name=document.getElementById('bName')?.value.trim();
+  const email=document.getElementById('bEmail')?.value.trim();
+  if(!name||!email||!email.includes('@')){toast('⚠️ Compila nome ed email validi.');return;}
+  const ov=document.getElementById('procOv'),txt=document.getElementById('procTxt');
+  ov.classList.add('show');
+  const steps=['Verifica identità…','Sicurezza transazione…','Processing payment…','Generazione pass…'];
+  let i=0;
+  const iv=setInterval(()=>{txt.textContent=steps[i%steps.length];i++;},700);
+  setTimeout(()=>{clearInterval(iv);ov.classList.remove('show');genTicket(name,email);},3200);
+}
+
+// ═══════════════ TICKET ═══════════════
+function genTicket(name,email){
+  const ev=selEv,tk=selTk;
+  const id='NP-'+ev.id+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  const qrData=`NIGHTPASS|${id}|${ev.id}|${name}|${email}|${tk.type}`;
+  const pass={id,eventId:ev.id,eventTitle:ev.title,eventDate:ev.date,eventVenue:`${ev.venue}, ${ev.city}`,ticketType:tk.type,price:tk.price,name,email,qrData,purchasedAt:new Date().toISOString()};
+  passes.push(pass);save('np_passes',passes);
+  buildPassPage(pass,'ticketC',true);
+  go('ticket');
+  setTimeout(()=>buildQR('qrcode',qrData),250);
+}
+
+function buildPassPage(pass,cid,isNew){
+  document.getElementById(cid).innerHTML=`
+    <div style="padding-top:12px;">
+      ${!isNew?`<button class="back-btn" onclick="go('passes')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>I miei pass</button>`:''}
+      ${isNew?`<div style="text-align:center;margin-bottom:24px;"><div style="font-size:48px;margin-bottom:8px;">🎉</div><div class="syne" style="font-size:26px;font-weight:800;margin-bottom:4px;">PASS CONFERMATO</div><div style="font-size:13px;color:var(--text-dim);">Copia inviata a ${pass.email}</div></div>`:''}
+      <div class="pass-card">
+        <div class="pass-head">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;opacity:.75;margin-bottom:6px;">NIGHTPASS · ${pass.ticketType.toUpperCase()}</div>
+          <div class="syne" style="font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1;">${pass.eventTitle}</div>
+        </div>
+        <div style="padding:18px 20px;position:relative;z-index:1;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Titolare</div><div style="font-size:13px;font-weight:600;">${pass.name}</div></div>
+            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Tipologia</div><div style="font-size:13px;font-weight:600;color:var(--blue-light);">${pass.ticketType}</div></div>
+            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Data</div><div style="font-size:12px;font-weight:500;">${pass.eventDate}</div></div>
+            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Venue</div><div style="font-size:12px;font-weight:500;">${pass.eventVenue.split(',')[0]}</div></div>
+          </div>
+        </div>
+        <div class="pass-div"><div class="notch"></div></div>
+        <div class="pass-qr"><div id="${isNew?'qrcode':'qrcode-detail'}"></div></div>
+        <div style="padding:15px 20px;">
+          <div style="font-size:10px;color:var(--blue-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">Pass ID</div>
+          <div style="font-size:14px;font-weight:600;letter-spacing:.06em;">${pass.id}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">
+        ${isNew?`<button class="btn-p" style="width:100%;" onclick="go('passes')">📱 Tutti i miei Pass</button>`:''}
+        <button class="btn-g" style="width:100%;" onclick="go('home')">← Torna agli eventi</button>
+      </div>
+    </div>`;
+}
+
+function buildQR(elId,data){
+  const el=document.getElementById(elId);
+  if(!el||!window.QRCode)return;
+  el.innerHTML='';
+  new QRCode(el,{text:data,width:160,height:160,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+}
+
+// ═══════════════ MY PASSES ═══════════════
+function renderPasses(){
+  const c=document.getElementById('passesList');
+  const up=passes.filter(p=>curUser&&p.email===curUser.email);
+  if(!up.length){
+    c.innerHTML=`<div class="empty-st"><div style="font-size:60px;opacity:.2;">🎟</div><div class="syne" style="font-size:24px;font-weight:800;opacity:.35;">NESSUN PASS</div><div style="font-size:13px;color:var(--text-mute);max-width:220px;">Acquista il tuo primo biglietto per vederlo qui</div><button class="btn-p" onclick="go('home')" style="margin-top:8px;">Esplora eventi</button></div>`;
+    return;
   }
-  if (e.target.id === 'expiry') {
-    e.target.value = e.target.value.replace(/\D/g,'').replace(/(\d{2})(\d)/,'$1/$2').substring(0,5);
-  }
-});
+  c.innerHTML=up.map(p=>`
+    <div class="glass" style="border-radius:20px;overflow:hidden;margin-bottom:14px;cursor:pointer;transition:all .25s ease;" onclick="openPass('${p.id}')" onmouseenter="this.style.borderColor='var(--blue-border)'" onmouseleave="this.style.borderColor='var(--glass-border)'">
+      <div style="background:linear-gradient(135deg,var(--blue) 0%,#1e3a8a 100%);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div class="syne" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">${p.eventTitle}</div><div style="font-size:11px;opacity:.75;letter-spacing:.08em;">${p.ticketType.toUpperCase()}</div></div>
+        <div style="font-size:28px;">🎟</div>
+      </div>
+      <div style="padding:14px 18px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:11px;">
+          <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Data</div><div style="font-size:13px;">${p.eventDate}</div></div>
+          <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Venue</div><div style="font-size:13px;">${p.eventVenue.split(',')[0]}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--blue-light);font-weight:500;">${p.id}</span>
+          <span style="font-size:11px;color:var(--text-mute);">Tap per QR →</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
 
-// ========== INIT ==========
-renderEvents('all');
+function openPass(id){
+  const p=passes.find(x=>x.id===id);if(!p)return;
+  buildPassPage(p,'ticketC',false);
+  go('ticket');
+  setTimeout(()=>buildQR('qrcode-detail',p.qrData),250);
+}
+
+// ═══════════════ INIT ═══════════════
+renderGrid(EVENTS,'evGrid');
+renderUpstrip();
+updateAvatar();
 </script>
 </body>
 </html>
