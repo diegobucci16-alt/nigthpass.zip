@@ -1,522 +1,844 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>NightPass | Acquista biglietti per eventi, festival e club</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Exclusive Villa Party — Guest List</title>
+    <link rel="icon" href="logo.jpg" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <style>
         :root {
-            /* --- NUOVA PALETTE COLORI (DARK + BLU ELETTRICO) --- */
-            --brand-accent: #0055FF; /* Blu Elettrico */
-            --bg-main: #050505;      /* Nero puro/sfondo pagina */
-            --bg-card: #121212;      /* Grigio molto scuro per le card */
-            --text-main: #FFFFFF;    /* Testo primario bianco */
-            --text-mut: #9CA3AF;     /* Testo secondario grigio chiaro */
-            --border-light: rgba(255, 255, 255, 0.1); /* Bordi semitrasparenti */
+            /* Palette elegante Oro e Nero profondo */
+            --primary: #D4AF37; /* Oro lussuoso */
+            --primary-light: #F3E5AB;
+            --bg: #0a0b10;
+            --glass: rgba(15, 15, 20, 0.4);
+            --border: rgba(212, 175, 55, 0.3); /* Bordo dorato trasparente */
+            --error: #ff4444;
+            --text: #f8f8f8;
+            --transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
             overflow-x: hidden;
-            margin: 0;
+            padding: 20px 0 40px;
         }
 
-        /* ----- ANIMAZIONI (REVEAL ON SCROLL) ----- */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 5px;
+            border-radius: 50%;
+            /* Filtro seppia/oro opzionale se il logo originale ha colori sballati */
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4)); 
         }
 
-        /* ----- HEADER & SUBNAV ----- */
-        .main-header {
-            background: rgba(5, 5, 5, 0.9);
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            /* Immagine di una villa lussuosa con piscina */
+            background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.15), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(10, 11, 16, 0.95), transparent 60%),
+                linear-gradient(135deg, rgba(10, 11, 16, 0.9) 0%, rgba(10, 11, 16, 0.7) 100%);
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── COUNTDOWN BANNER ─── */
+        .countdown-banner {
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 16px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown-inner {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             backdrop-filter: blur(15px);
-            position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid var(--border-light);
+            -webkit-backdrop-filter: blur(15px);
         }
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 5%; border-bottom: 1px solid var(--border-light);
+
+        .countdown-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--primary);
+            font-style: italic;
         }
-        .logo { font-size: 26px; font-weight: 800; color: var(--brand-accent); letter-spacing: -1px; }
-        
-        .search-box {
-            flex: 1; max-width: 400px; margin: 0 20px; position: relative;
+
+        .countdown-units {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 52px;
+        }
+
+        .countdown-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .countdown-sub {
+            font-size: 0.55rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #aaa;
+        }
+
+        .countdown-sep {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: rgba(212, 175, 55, 0.5);
+            line-height: 1;
+            margin-top: -8px;
+        }
+
+        /* ─── VENUE BADGE ─── */
+        .venue-badge {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .venue-inner {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .venue-clickable {
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .venue-clickable:hover {
+            border-color: var(--border);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .venue-icon {
+            font-size: 1.6rem;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+        }
+
+        .venue-info {
+            flex: 1;
+        }
+
+        .venue-info span {
+            display: block;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 2px;
+        }
+
+        .venue-info strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .venue-info em {
+            display: block;
+            font-style: normal;
+            font-size: 0.65rem;
+            color: var(--primary);
+            margin-top: 2px;
+        }
+
+        /* ─── CARD SCENE ─── */
+        .scene {
+            width: 100%;
+            max-width: 420px;
+            perspective: 1500px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: relative;
+            width: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(212, 175, 55, 0.03);
+        }
+
+        .card-back {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(180deg) translateZ(1px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .card-front {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .card-front::-webkit-scrollbar, .card-back::-webkit-scrollbar {
             display: none;
         }
-        @media (min-width: 768px) { .search-box { display: block; } }
-        .search-box input {
-            width: 100%; padding: 10px 15px 10px 40px; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-light); border-radius: 99px; outline: none; font-size: 14px; color: white;
-        }
-        .search-box input:focus { border-color: var(--brand-accent); }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-mut); }
 
-        .header-actions { display: flex; align-items: center; gap: 20px; }
-        .header-link { font-size: 14px; font-weight: 600; color: var(--text-main); text-decoration: none; cursor: pointer;}
-        .header-link:hover { color: var(--brand-accent); }
-        .btn-login {
-            background: rgba(255,255,255,0.1); color: var(--text-main); padding: 8px 20px;
-            border-radius: 99px; font-weight: 600; font-size: 14px; transition: 0.2s; border: none;
-        }
-        .btn-login:hover { background: rgba(255,255,255,0.2); }
-        .user-icon {
-            width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.1); 
-            display: flex; justify-content: center; align-items: center; color: var(--text-main); cursor: pointer; transition: 0.2s;
-        }
-        .user-icon:hover { background: rgba(255,255,255,0.2); }
-
-        /* Sottomenu Categorie */
-        .sub-nav {
-            display: flex; gap: 24px; padding: 15px 5%; overflow-x: auto;
-            white-space: nowrap; scrollbar-width: none; background: var(--bg-main);
-        }
-        .sub-nav::-webkit-scrollbar { display: none; }
-        .sub-nav a {
-            color: var(--text-mut); font-size: 15px; font-weight: 600; text-decoration: none;
-            position: relative; padding-bottom: 5px; transition: 0.2s;
-        }
-        .sub-nav a:hover { color: var(--text-main); }
-        .sub-nav a.active { color: var(--text-main); }
-        .sub-nav a.active::after, .sub-nav a:hover::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px;
-            background: var(--brand-accent); border-radius: 2px;
+        .brand {
+            text-align: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
-        /* ----- CAROSELLI (DRAG TO SCROLL) ----- */
-        .section-container { padding: 40px 0 0 5%; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding-right: 5%; margin-bottom: 20px; }
-        .section-title { font-size: 28px; font-weight: 800; }
-        .vedi-tutto { color: var(--text-mut); font-size: 14px; font-weight: 600; text-decoration: none; transition: 0.2s; }
-        .vedi-tutto:hover { color: var(--brand-accent); }
-
-        .slider {
-            display: flex; gap: 16px; overflow-x: auto; padding-bottom: 20px; padding-right: 5%;
-            scroll-snap-type: x mandatory; cursor: grab; scrollbar-width: none;
+        .brand p {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 8px;
         }
-        .slider::-webkit-scrollbar { display: none; }
-        .slider:active { cursor: grabbing; }
 
-        /* Card Evento */
-        .event-card {
-            min-width: 260px; width: 260px; background: var(--bg-card); border-radius: 16px;
-            overflow: hidden; border: 1px solid var(--border-light); scroll-snap-align: start;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s;
-            display: flex; flex-direction: column; user-select: none;
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            color: #fff;
         }
-        .event-card:hover { transform: translateY(-8px); border-color: var(--brand-accent); }
-        
-        .card-img-wrapper { position: relative; width: 100%; height: 260px; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; pointer-events: none; }
-        .event-card:hover .card-img { transform: scale(1.05); }
 
-        .card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
-        .ev-date { font-size: 12px; color: var(--brand-accent); font-weight: 600; margin-bottom: 6px; }
-        .ev-title { font-size: 16px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; height: 38px; overflow: hidden; }
-        .ev-venue { font-size: 13px; color: var(--text-mut); display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
-        
-        .btn-acquista {
-            width: 100%; padding: 10px; background: transparent; color: var(--brand-accent);
-            border: 1px solid var(--brand-accent); border-radius: 99px; font-weight: 700;
-            font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-top: auto;
+        .field {
+            margin-bottom: 12px;
+            position: relative;
         }
-        .btn-acquista:hover { background: var(--brand-accent); color: white; }
 
-        /* Features Badge */
-        .feature-badges { display: flex; gap: 5px; position: absolute; bottom: 10px; left: 10px; z-index: 10; }
-        .badge { background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); color: white; font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); }
-
-        /* ----- SEZIONE APP (BANNER BLU ELETTRICO) ----- */
-        .app-banner {
-            background: var(--brand-accent); border-radius: 24px; margin: 60px 5%;
-            display: flex; flex-direction: column; overflow: hidden; position: relative;
+        .field label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 5px 5px;
         }
-        @media (min-width: 900px) { .app-banner { flex-direction: row; align-items: center; } }
-        .app-banner-text { padding: 50px 40px; color: white; flex: 1; z-index: 2; }
-        .app-banner h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 800; line-height: 1.1; margin-bottom: 15px; }
-        .app-banner p { font-size: 18px; font-weight: 500; opacity: 0.9; margin-bottom: 30px; max-width: 400px; }
-        .app-stores { display: flex; gap: 15px; }
-        .app-stores img { height: 40px; cursor: pointer; transition: transform 0.2s; }
-        .app-stores img:hover { transform: scale(1.05); }
-        
-        .app-phone { flex: 1; position: relative; height: 300px; display: flex; justify-content: center; align-items: flex-end; }
-        @media (min-width: 900px) { .app-phone { height: 400px; } }
-        .phone-mockup { width: 220px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(20px); animation: floatPhone 4s ease-in-out infinite; }
-        @keyframes floatPhone { 0%, 100% { transform: translateY(20px); } 50% { transform: translateY(0px); } }
 
-        /* ----- DESTINAZIONI & LOCALI ----- */
-        .city-card {
-            min-width: 160px; height: 160px; border-radius: 20px; overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; border: 1px solid var(--border-light);
+        input:not([type="checkbox"]) {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 14px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
         }
-        .city-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.8; }
-        .city-card:hover img { transform: scale(1.1); opacity: 1; }
-        .city-name { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: 800; font-size: 18px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
 
-        .club-circle {
-            min-width: 130px; display: flex; flex-direction: column; align-items: center; gap: 10px; scroll-snap-align: start; cursor: pointer;
+        input:not([type="checkbox"]):focus {
+            border-color: var(--primary);
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
         }
-        .club-img-wrap { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border-light); background: #111; padding: 5px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .club-circle:hover .club-img-wrap { transform: translateY(-5px); border-color: var(--brand-accent); }
-        .club-img-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .club-name { font-size: 14px; font-weight: 700; text-align: center; }
-        .club-city { font-size: 11px; color: var(--text-mut); display: flex; align-items: center; gap: 4px; }
 
-        /* ----- BANNER BUSINESS ----- */
-        .business-banner {
-            background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 24px; margin: 60px 5%; padding: 50px 40px; color: white; text-align: center; overflow: hidden; position: relative;
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-        .business-banner::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,85,255,0.1) 0%, transparent 50%); z-index: 0; pointer-events: none;
-        }
-        .business-banner h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 800; margin-bottom: 15px; position: relative; z-index: 1;}
-        .btn-business { position: relative; z-index: 1; background: var(--text-main); color: black; padding: 12px 30px; border-radius: 99px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; margin-top: 20px; transition: 0.2s;}
-        .btn-business:hover { background: var(--brand-accent); color: white; transform: scale(1.05); }
 
-        /* ----- FOOTER ----- */
-        footer { background: var(--bg-main); border-top: 1px solid var(--border-light); padding: 60px 5% 30px; margin-top: 60px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 40px; margin-bottom: 40px; }
-        .footer-logo { font-size: 28px; font-weight: 800; color: var(--brand-accent); margin-bottom: 10px; }
-        .footer-links h4 { font-weight: 700; margin-bottom: 15px; font-size: 15px; }
-        .footer-links ul { list-style: none; padding: 0; }
-        .footer-links li { margin-bottom: 10px; font-size: 14px; color: var(--text-mut); cursor: pointer; transition: 0.2s; }
-        .footer-links li:hover { color: var(--brand-accent); }
-        .payments { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 30px; border-top: 1px solid var(--border-light); padding-top: 20px;}
-        .payments img { height: 25px; opacity: 0.6; }
+        .social-box {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .social-box a {
+            color: #ccc;
+            font-size: 1.4rem;
+            transition: 0.3s;
+        }
+
+        .social-box a:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .privacy-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .privacy-box p {
+            font-size: 0.65rem;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        /* Accent Checkbox */
+        input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            background-size: 200% 200%;
+            animation: gradient-gold 3s ease infinite;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes gradient-gold {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-main:disabled {
+            background: #555;
+            color: #888;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+            animation: none;
+        }
+
+        .footer-link {
+            text-align: center;
+            padding: 5px;
+            font-size: 0.75rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .creators {
+            text-align: center;
+            margin-top: 15px;
+            padding-bottom: 5px;
+            font-size: 0.55rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            flex-shrink: 0;
+        }
+
+        .has-error input {
+            border-color: var(--error) !important;
+            background: rgba(255, 68, 68, 0.05) !important;
+        }
+
+        .err-hint {
+            color: var(--error);
+            font-size: 0.6rem;
+            position: absolute;
+            right: 5px;
+            top: 0;
+            display: none;
+            font-weight: 600;
+        }
+
+        .pass-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .eye-toggle {
+            position: absolute;
+            right: 12px;
+            color: #888;
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+            transition: color 0.3s;
+        }
+
+        .eye-toggle:hover {
+            color: var(--primary);
+        }
+
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 11, 16, 0.98);
+            border-radius: 24px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .success-overlay h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .success-overlay p {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(10, 11, 16, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #fff;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 999;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.ok {
+            border-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        .toast.err {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--primary); }
+            50% { opacity: 0.3; box-shadow: none; }
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+
+        /* ─── SPOTS BAR ─── */
+        .spots-bar {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .spots-inner {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 18px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .spots-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .spots-label {
+            font-size: 0.55rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #aaa;
+        }
+
+        .spots-count {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .spots-track {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .spots-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #A67C00, #F3E5AB, #BF953F);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spots-warning {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
 
-    <header class="main-header">
-        <div class="top-bar">
-            <div class="logo">NightPass</div>
-            
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Ricerca per nome evento...">
-            </div>
+    <div class="ambient-bg"></div>
+    <div class="noise"></div>
+    <div class="toast" id="toast"></div>
 
-            <div class="header-actions">
-                <a class="header-link hidden md:block">Vendi il tuo evento</a>
-                <a class="header-link hidden md:block">Aiuto</a>
-                <button class="btn-login">Accedi</button>
-                <div class="user-icon">
-                    <i class="fa-solid fa-user"></i>
+    <div class="countdown-banner">
+        <div class="countdown-inner">
+            <div class="countdown-label">
+                <span class="live-dot"></span>Inizio evento
+            </div>
+            <div class="countdown-units">
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-days">00</span>
+                    <span class="countdown-sub">Giorni</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-hours">00</span>
+                    <span class="countdown-sub">Ore</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-mins">00</span>
+                    <span class="countdown-sub">Min</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-secs">00</span>
+                    <span class="countdown-sub">Sec</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <nav class="sub-nav" id="draggable-nav">
-            <a href="#" class="active">Consigliati</a>
-            <a href="#">Discoteca</a>
-            <a href="#">Live</a>
-            <a href="#">Festival</a>
-            <a href="#">Internazionali</a>
-            <a href="#">Sport</a>
-            <a href="#">Arte & Teatro</a>
-            <a href="#">Tempo libero</a>
-            <a href="#">Destinazioni più popolari</a>
-        </nav>
-    </header>
-
-    <main>
-        <section class="section-container reveal">
-            <div class="section-header">
-                <h2 class="section-title">Consigliati</h2>
+    <div class="venue-badge">
+        <a href="#" style="text-decoration: none; display: block; cursor: default;">
+            <div class="venue-inner">
+                <span class="venue-icon">🥂</span>
+                <div class="venue-info">
+                    <span>Private Location</span>
+                    <strong>SECRET VILLA</strong>
+                    <em>Indirizzo rivelato agli ospiti confermati</em>
+                </div>
+                <span class="material-symbols-outlined"
+                    style="color: var(--primary); font-size: 24px;">lock</span>
             </div>
-            <div class="slider drag-slider">
+        </a>
+    </div>
+
+    <div class="spots-bar">
+        <div class="spots-inner">
+            <div class="spots-header">
+                <span class="spots-label">Posti Vip Rimanenti</span>
+                <span class="spots-count" id="spots-count">— / 100</span>
+            </div>
+            <div class="spots-track">
+                <div class="spots-fill" id="spots-fill"></div>
+            </div>
+            <p class="spots-warning" id="spots-warning">⚠️ Capacità massima raggiunta. Lista chiusa.</p>
+        </div>
+    </div>
+
+    <div class="scene">
+        <div class="card" id="mainCard">
+
+            <div class="card-face card-front">
+                <div class="brand">
+                    <p>Exclusive Private Party</p>
+                    </div>
+
+                <h2 class="form-title">Richiesta Accesso</h2>
+
+                <div class="row-2">
+                    <div class="field" id="f-nome">
+                        <label>Nome <span class="err-hint">Richiesto</span></label>
+                        <input type="text" id="reg-nome" placeholder="Es. Leonardo" autocomplete="given-name">
+                    </div>
+                    <div class="field" id="f-cognome">
+                        <label>Cognome <span class="err-hint">Richiesto</span></label>
+                        <input type="text" id="reg-cognome" placeholder="Es. Rossi" autocomplete="family-name">
+                    </div>
+                </div>
+
+                <div class="field" id="f-telefono">
+                    <label>Telefono <span class="err-hint">Non valido</span></label>
+                    <input type="tel" id="reg-telefono" placeholder="+39 333..." autocomplete="tel">
+                </div>
+
+                <div class="field" id="f-email">
+                    <label>Email <span class="err-hint">Non valida</span></label>
+                    <input type="email" id="reg-email" placeholder="email@dominio.com" autocomplete="email">
+                </div>
+
+                <div class="privacy-box" id="privacy-box">
+                    <input type="checkbox" id="reg-privacy">
+                    <a href="privacy.html" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
+                        <p>Accetto i termini e garantisco la massima riservatezza sull'evento.</p>
+                    </a>
+                </div>
                 
-                <div class="event-card">
-                    <div class="card-img-wrapper">
-                        <div class="feature-badges">
-                            <span class="badge"><i class="fa-solid fa-retweet"></i> Rivendita</span>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a300a" class="card-img" draggable="false">
-                    </div>
-                    <div class="card-body">
-                        <div class="ev-date">Sabato 11 Aprile / 16:00</div>
-                        <div class="ev-title">FOLAMOUR at Arena Flegrea by Soulstice</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Arena Flegrea, Napoli</div>
-                        <button class="btn-acquista">Acquista</button>
+                <div class="social-box">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+
+                <button class="btn-main" id="regSubmitBtn">
+                    <span>RICHIEDI INVITO</span>
+                    <span class="material-symbols-outlined">key</span>
+                </button>
+
+                <div class="footer-link" onclick="flipCard()">Staff o VIP? <b>Accedi</b></div>
+                <div class="creators">Design by Diego Bucci & Alessandro Olivieri</div>
+
+                <div class="success-overlay" id="regSuccess">
+                    <span class="material-symbols-outlined"
+                        style="font-size: 4rem; color: var(--primary);">workspace_premium</span>
+                    <h2>RICHIESTA INVIATA</h2>
+                    <p>La tua richiesta è in attesa di approvazione.<br>Controlla la tua email per l'invito e i dettagli segreti.</p>
+                </div>
+            </div>
+
+            <div class="card-face card-back">
+                <div class="brand">
+                    <p>Reserved Area</p>
+                </div>
+
+                <h2 class="form-title">Accesso Staff</h2>
+
+                <div class="field" id="fl-id">
+                    <label>ID Personale <span class="err-hint">Richiesto</span></label>
+                    <input type="text" id="user-id" placeholder="Es. VIP-001" autocomplete="username"
+                        autocapitalize="none">
+                </div>
+
+                <div class="field" id="fl-pass">
+                    <label>Passcode <span class="err-hint">Richiesto</span></label>
+                    <div class="pass-box">
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+                        <span class="material-symbols-outlined eye-toggle" id="togglePass">visibility</span>
                     </div>
                 </div>
 
-                <div class="event-card">
-                    <div class="card-img-wrapper">
-                        <div class="feature-badges">
-                            <span class="badge"><i class="fa-solid fa-user-pen"></i> Cambio Nome</span>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1540039155732-67591c28f117" class="card-img" draggable="false">
-                    </div>
-                    <div class="card-body">
-                        <div class="ev-date">Sabato 11 Aprile / 19:30</div>
-                        <div class="ev-title">The Grand Opening - Taste Beats in Space</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Gallerie Mercatali, Verona</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
+                <div style="margin-top: 30px;"></div>
 
-                <div class="event-card">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745" class="card-img" draggable="false">
-                    </div>
-                    <div class="card-body">
-                        <div class="ev-date">Sabato 11 Aprile / 22:00</div>
-                        <div class="ev-title">Eiffel 65 - Voglia di Dance All Night</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Fabrique, Milano</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
-                
-                <div class="event-card">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7" class="card-img" draggable="false">
-                    </div>
-                    <div class="card-body">
-                        <div class="ev-date">Sabato 11 Aprile / 23:30</div>
-                        <div class="ev-title">Wade - Amnesia Milano</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Amnesia, Milano</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
+                <button class="btn-main" id="loginBtn">
+                    <span>SBLOCCA ACCESSO</span>
+                    <span class="material-symbols-outlined">lock_open</span>
+                </button>
 
-            </div>
-        </section>
+                <div class="footer-link" onclick="flipCard()">Torna alla Guest List</div>
+                <div class="creators">Design by Diego Bucci & Alessandro Olivieri</div>
 
-        <section class="section-container reveal">
-            <div class="section-header">
-                <h2 class="section-title">Discoteca</h2>
-                <a href="#" class="vedi-tutto">Vedi tutto ></a>
-            </div>
-            <div class="slider drag-slider">
-                <div class="event-card">
-                    <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea" class="card-img" draggable="false"></div>
-                    <div class="card-body">
-                        <div class="ev-date">Venerdì 10 Aprile / 22:00</div>
-                        <div class="ev-title">Lo stretto indispensabile - Disney rock N' roll</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Lattepiù Live</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
-                <div class="event-card">
-                    <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1557766131-d6484edeb95c" class="card-img" draggable="false"></div>
-                    <div class="card-body">
-                        <div class="ev-date">Venerdì 10 Aprile / 23:00</div>
-                        <div class="ev-title">Back To The 80's</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Duel Club</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
-                <div class="event-card">
-                    <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1493225457124-a1a2a5f25260" class="card-img" draggable="false"></div>
-                    <div class="card-body">
-                        <div class="ev-date">Venerdì 10 Aprile / 23:30</div>
-                        <div class="ev-title">All in - American Party</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Events</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
-                </div>
-                <div class="event-card">
-                    <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1506157786151-b8491531f063" class="card-img" draggable="false"></div>
-                    <div class="card-body">
-                        <div class="ev-date">Sabato 11 Aprile / 23:00</div>
-                        <div class="ev-title">Random - Una festa a caso</div>
-                        <div class="ev-venue"><i class="fa-solid fa-location-dot"></i> Afterlife Live Club</div>
-                        <button class="btn-acquista">Acquista</button>
-                    </div>
+                <div class="success-overlay" id="loginSuccess">
+                    <span class="material-symbols-outlined" style="font-size: 4rem; color: var(--primary);">vpn_key</span>
+                    <h2>ACCESSO CONSENTITO</h2>
+                    <p>Preparazione area riservata in corso...</p>
                 </div>
             </div>
-        </section>
 
-        <section class="reveal">
-            <div class="app-banner">
-                <div class="app-banner-text">
-                    <h2>Tutti i tuoi eventi a portata di un click!</h2>
-                    <p>Scarica l'app per non perdere nessuno degli eventi vicino a te. Con NightPass il divertimento è sempre a portata di mano!</p>
-                    <div class="app-stores">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
-                    </div>
-                </div>
-                <div class="app-phone">
-                    <img src="WhatsApp Image 2026-04-12 at 12.02.51.jpeg" class="phone-mockup" style="object-fit:cover;" alt="App Screenshot">
-                    <div style="position: absolute; right: 10%; top: 30%; color: white; font-family: cursive; font-size: 24px; transform: rotate(-10deg); text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Scarica<br>L'App ⤵</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-container reveal">
-            <div class="section-header">
-                <h2 class="section-title">Destinazioni più popolari</h2>
-            </div>
-            <div class="slider drag-slider" style="padding-bottom: 30px;">
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1513581166358-b66a2edb4565" draggable="false"><div class="city-name">Milano</div></div>
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5" draggable="false"><div class="city-name">Roma</div></div>
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1520175480921-4edfa2983e0f" draggable="false"><div class="city-name">Venezia</div></div>
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1600273752538-2374ba2f300c" draggable="false"><div class="city-name">Firenze</div></div>
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1533587851505-d119e13bf0b3" draggable="false"><div class="city-name">Napoli</div></div>
-                <div class="city-card"><img src="https://images.unsplash.com/photo-1596484552834-6a58f850d0a2" draggable="false"><div class="city-name">Bologna</div></div>
-            </div>
-        </section>
-
-        <section class="section-container reveal">
-            <div class="section-header">
-                <h2 class="section-title">Locali</h2>
-            </div>
-            <div class="slider drag-slider" style="padding-bottom: 40px;">
-                <div class="club-circle">
-                    <div class="club-img-wrap"><img src="https://images.unsplash.com/photo-1563841930606-67e2bce48b78" draggable="false"></div>
-                    <div>
-                        <div class="club-name">Brahma Clubship</div>
-                        <div class="club-city"><i class="fa-solid fa-location-dot"></i> Civitanova Marche</div>
-                    </div>
-                </div>
-                <div class="club-circle">
-                    <div class="club-img-wrap"><img src="https://images.unsplash.com/photo-1558317714-f584e0fb4a77" draggable="false"></div>
-                    <div>
-                        <div class="club-name">Discoteca Florida</div>
-                        <div class="club-city"><i class="fa-solid fa-location-dot"></i> Ghedi, BS</div>
-                    </div>
-                </div>
-                <div class="club-circle">
-                    <div class="club-img-wrap"><img src="https://images.unsplash.com/photo-1574391884720-bbc3740c59d1" draggable="false"></div>
-                    <div>
-                        <div class="club-name">The Cage</div>
-                        <div class="club-city"><i class="fa-solid fa-location-dot"></i> Livorno</div>
-                    </div>
-                </div>
-                <div class="club-circle">
-                    <div class="club-img-wrap"><img src="https://images.unsplash.com/photo-1545128485-c400e7702796" draggable="false"></div>
-                    <div>
-                        <div class="club-name">Duel Club</div>
-                        <div class="club-city"><i class="fa-solid fa-location-dot"></i> Pozzuoli, NA</div>
-                    </div>
-                </div>
-                <div class="club-circle">
-                    <div class="club-img-wrap"><img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205" draggable="false"></div>
-                    <div>
-                        <div class="club-name">Teatro Verdi</div>
-                        <div class="club-city"><i class="fa-solid fa-location-dot"></i> Cesena</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="reveal">
-            <div class="business-banner">
-                <h2>Il tuo evento in vendita in soli 5 minuti!</h2>
-                <p style="font-size: 18px; max-width: 600px; margin: 0 auto; opacity: 0.9; position: relative; z-index: 1;">Una suite completa di prodotti per la gestione del tuo evento: controllo accessi, wallet digitale, mappe 3D e rivendita sicura certificata SIAE.</p>
-                <button class="btn-business">Scopri di più su business.nightpass.it</button>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="reveal">
-        <div class="footer-grid">
-            <div>
-                <div class="footer-logo">NightPass</div>
-                <p style="font-size: 13px; color: var(--text-mut);">© NightPass Srl, tutti i diritti riservati. Biglietteria elettronica certificata.</p>
-            </div>
-            <div>
-                <h4>About</h4>
-                <ul>
-                    <li>Chi Siamo</li>
-                    <li>Business</li>
-                    <li>Carriere</li>
-                    <li>Press kit</li>
-                </ul>
-            </div>
-            <div>
-                <h4>Supporto</h4>
-                <ul>
-                    <li>FAQ e Assistenza</li>
-                    <li>Termini e Condizioni</li>
-                    <li>Privacy Policy</li>
-                    <li>Cookie Policy</li>
-                </ul>
-            </div>
-            <div>
-                <h4>Funzionalità</h4>
-                <ul>
-                    <li>Rivendita Biglietti</li>
-                    <li>Cambio Nominativo</li>
-                    <li>Paga in 3 rate (Scalapay)</li>
-                    <li>App Accessi</li>
-                </ul>
-            </div>
         </div>
-        
-        <div class="payments">
-            <span style="font-weight: 600; font-size: 14px; margin-right: 10px;">Metodi accettati:</span>
-            <i class="fa-brands fa-cc-visa fa-2x" style="color: #ffffff;"></i>
-            <i class="fa-brands fa-cc-mastercard fa-2x" style="color: #ffffff;"></i>
-            <i class="fa-brands fa-cc-paypal fa-2x" style="color: #ffffff;"></i>
-            <span style="font-weight: 800; font-size: 14px; color: var(--brand-accent); margin-left: 10px;">Scalapay</span>
-            <span style="font-weight: 800; font-size: 14px; color: var(--brand-accent);">Satispay</span>
-            <span style="font-weight: 800; font-size: 14px; color: white;">18app</span>
-        </div>
-    </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
 
     <script>
-        // 1. REVEAL ANIMATION
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 100;
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
+        const EVENT_DATE = new Date('2026-04-25T17:00:00');
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = EVENT_DATE - now;
+
+            if (diff <= 0) {
+                document.getElementById('cd-days').textContent = '00';
+                document.getElementById('cd-hours').textContent = '00';
+                document.getElementById('cd-mins').textContent = '00';
+                document.getElementById('cd-secs').textContent = '00';
+                document.querySelector('.countdown-label').innerHTML = '✨ L\'evento è in corso';
+                return;
             }
+
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+            document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+            document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
         }
-        window.addEventListener("scroll", reveal);
-        reveal();
 
-        // 2. DRAG TO SCROLL PER I CAROSELLI
-        const sliders = document.querySelectorAll('.drag-slider, #draggable-nav');
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
         
-        sliders.forEach(slider => {
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            slider.addEventListener('mousedown', (e) => {
-                isDown = true;
-                slider.style.cursor = 'grabbing';
-                startX = e.pageX - slider.offsetLeft;
-                scrollLeft = slider.scrollLeft;
-            });
-            slider.addEventListener('mouseleave', () => {
-                isDown = false;
-                slider.style.cursor = 'grab';
-            });
-            slider.addEventListener('mouseup', () => {
-                isDown = false;
-                slider.style.cursor = 'grab';
-            });
-            slider.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2;
-                slider.scrollLeft = scrollLeft - walk;
-            });
-        });
+        // Funzione segnaposto per far girare la carta lato frontend se non presente in app.js
+        function flipCard() {
+            document.getElementById('mainCard').classList.toggle('is-flipped');
+        }
     </script>
 </body>
+
 </html>

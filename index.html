@@ -9,11 +9,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --blue:          #2563EB;
-  --blue-light:    #60A5FA;
-  --blue-glow:     rgba(37,99,235,0.4);
-  --blue-soft:     rgba(37,99,235,0.12);
-  --blue-border:   rgba(96,165,250,0.3);
+  --blue:          #6366f1;
+  --blue-light:    #818cf8;
+  --blue-glow:     rgba(99,102,241,0.4);
+  --blue-soft:     rgba(99,102,241,0.12);
+  --blue-border:   rgba(129,140,248,0.3);
   --glass-bg:      rgba(255,255,255,0.05);
   --glass-bg2:     rgba(255,255,255,0.09);
   --glass-border:  rgba(255,255,255,0.09);
@@ -29,9 +29,9 @@ body{font-family:'Outfit',sans-serif;background:var(--page-bg);color:#fff;min-he
 /* BG ORBS */
 .bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
 .orb{position:absolute;border-radius:50%;filter:blur(90px);animation:drift 22s ease-in-out infinite alternate;}
-.orb-1{width:520px;height:520px;background:radial-gradient(circle,#1d4ed8 0%,transparent 70%);top:-120px;left:-120px;opacity:.35;animation-duration:24s;}
-.orb-2{width:420px;height:420px;background:radial-gradient(circle,#0284c7 0%,transparent 70%);bottom:15%;right:-80px;opacity:.3;animation-duration:19s;animation-delay:-6s;}
-.orb-3{width:320px;height:320px;background:radial-gradient(circle,#4f46e5 0%,transparent 70%);top:42%;left:28%;opacity:.2;animation-duration:26s;animation-delay:-12s;}
+.orb-1{width:520px;height:520px;background:radial-gradient(circle,#4f46e5 0%,transparent 70%);top:-120px;left:-120px;opacity:.35;animation-duration:24s;}
+.orb-2{width:420px;height:420px;background:radial-gradient(circle,#7c3aed 0%,transparent 70%);bottom:15%;right:-80px;opacity:.3;animation-duration:19s;animation-delay:-6s;}
+.orb-3{width:320px;height:320px;background:radial-gradient(circle,#2563eb 0%,transparent 70%);top:42%;left:28%;opacity:.2;animation-duration:26s;animation-delay:-12s;}
 @keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(35px,28px) scale(1.08);}}
 
 /* GRAIN */
@@ -69,12 +69,15 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 /* BUTTONS */
 .btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;padding:14px 22px;border:none;border-radius:14px;cursor:pointer;position:relative;overflow:hidden;transition:all .25s ease;box-shadow:0 4px 20px rgba(37,99,235,.4),0 1px 0 rgba(255,255,255,.12) inset;}
-.btn-p::before{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,rgba(255,255,255,.12),transparent);pointer-events:none;}
-.btn-p:hover{background:#1d4ed8;box-shadow:0 6px 28px rgba(37,99,235,.6),0 1px 0 rgba(255,255,255,.12) inset;transform:translateY(-1px);}
+.btn-p::before{content:'';position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%);pointer-events:none;}
+.btn-p:hover{background:#4f46e5;box-shadow:0 6px 28px var(--blue-glow),0 1px 0 rgba(255,255,255,.12) inset;transform:translateY(-1px);}
 .btn-p:active{transform:translateY(0);}
 .btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none;}
 .btn-g{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--glass-bg);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:13px 20px;border:1px solid var(--glass-border2);border-radius:14px;cursor:pointer;transition:all .22s ease;backdrop-filter:blur(10px);}
 .btn-g:hover{background:var(--glass-bg2);color:#fff;border-color:rgba(255,255,255,.25);}
+.fav-btn{position:absolute;top:12px;left:12px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);transition:all 0.2s ease;}
+.fav-btn:hover{transform:scale(1.1);background:rgba(255,255,255,0.1);}
+.fav-btn.active svg{fill:#ef4444;stroke:#ef4444;}
 
 /* INPUTS */
 .f-wrap{position:relative;margin-bottom:15px;}
@@ -97,6 +100,12 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 /* HERO */
 .hero-title{font-family:'Syne',sans-serif;font-size:clamp(46px,13vw,82px);font-weight:800;line-height:.9;letter-spacing:-.02em;}
+.text-gradient{background:linear-gradient(to right, #fff, var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* SKELETON LOAD */
+@keyframes shimmer{0%{background-position:-468px 0}100%{background-position:468px 0}}
+.loading-shimmer{background:#1a1a1a;background-image:linear-gradient(to right,#1a1a1a 0%,#222 20%,#1a1a1a 40%,#1a1a1a 100%);background-repeat:no-repeat;background-size:800px 104px;display:inline-block;position:relative;animation:shimmer 1.5s linear infinite forwards;}
+
 
 /* GENRE SCROLL */
 .g-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px;}
@@ -109,10 +118,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 @media(min-width:480px){.ev-grid{grid-template-columns:repeat(3,1fr);}}
 
 /* EVENT CARD */
-.ev-card{border-radius:20px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);position:relative;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-.ev-card:hover{transform:translateY(-5px) scale(1.012);border-color:var(--blue-border);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(37,99,235,.25),0 0 40px rgba(37,99,235,.12);}
+.ev-card{border-radius:22px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .4s cubic-bezier(.165,.84,.44,1);position:relative;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.ev-card:hover{transform:translateY(-8px);border-color:var(--blue-border);box-shadow:0 22px 40px rgba(0,0,0,0.4),0 0 20px var(--blue-soft);}
 .ev-card:active{transform:scale(.98);}
-.ev-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;transition:transform .4s ease;}
+.ev-img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.165,.84,.44,1);}
 .ev-card:hover .ev-img{transform:scale(1.05);}
 .ev-img-wrap{overflow:hidden;position:relative;}
 .ev-img-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,18,.95) 0%,rgba(4,4,18,.25) 55%,transparent 100%);}
@@ -265,7 +274,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <section class="section active" id="sHome">
   <div style="padding-top:10px;margin-bottom:28px;">
     <div class="pill pill-b au d1" style="margin-bottom:14px;"><div class="dot"></div><span>Milano · Questa Settimana</span></div>
-    <div class="hero-title au d2"><span style="color:#fff">SENTI</span><br><span style="color:var(--blue-light)">LA</span><br><span style="color:#fff">NOTTE.</span></div>
+    <div class="hero-title au d2"><span style="color:#fff">SENTI</span><br><span class="text-gradient">LA</span><br><span style="color:#fff">NOTTE.</span></div>
     <div style="font-size:14px;color:var(--text-dim);margin-top:10px;" class="au d3">Ticketing per club, rave e cultura underground</div>
   </div>
   <div class="search-bar au d3" style="margin-bottom:20px;">
@@ -465,8 +474,11 @@ function renderGrid(list,id){
   if(!list.length){g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--text-dim);font-size:14px;">Nessun evento trovato</div>`;return;}
   g.innerHTML=list.map((ev,i)=>{
     const mp=Math.min(...ev.tickets.filter(t=>t.left>0).map(t=>t.price));
-    return`<div class="ev-card au" style="animation-delay:${i*.06}s;opacity:0;" onclick="openEvent('${ev.id}')">
-      <div class="ev-img-wrap"><img class="ev-img" src="${ev.img}" alt="${ev.title}" loading="lazy"/><div class="ev-img-ov"></div><div class="ev-genre">${ev.genre}</div></div>
+    return`<div class="ev-card au" style="animation-delay:${i*.06}s;opacity:0;">
+      <div class="ev-img-wrap" onclick="openEvent('${ev.id}')">
+        <button class="fav-btn" onclick="toggleFav(event, this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+        <img class="ev-img" src="${ev.img}" alt="${ev.title}" loading="lazy"/><div class="ev-img-ov"></div><div class="ev-genre">${ev.genre}</div>
+      </div>
       <div style="padding:12px;">
         <div class="syne" style="font-size:17px;font-weight:700;line-height:1.1;margin-bottom:4px;">${ev.title}</div>
         <div style="font-size:11px;color:var(--text-dim);margin-bottom:7px;">${ev.date}</div>
@@ -486,6 +498,13 @@ function renderUpstrip(){
 }
 
 function renderSrGrid(){renderGrid(EVENTS.filter(ev=>curGenre==='tutti'||ev.genre===curGenre),'srGrid');}
+
+function toggleFav(e, btn) {
+  e.stopPropagation();
+  btn.classList.toggle('active');
+  const isFav = btn.classList.contains('active');
+  toast(isFav ? 'Aggiunto ai preferiti ❤️' : 'Rimosso dai preferiti');
+}
 
 // ═══════════════ FILTER ═══════════════
 function filterEv(q=''){
