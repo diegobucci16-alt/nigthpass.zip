@@ -1,710 +1,347 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<title>NIGHTPASS</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rewindbar · Trarivi di Montescudo</title>
+<meta name="description" content="Rewindbar a Trarivi di Montescudo (RN). Caffè dall'alba all'aperitivo, sulle colline dell'entroterra riminese.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --blue:          #6366f1;
-  --blue-light:    #818cf8;
-  --blue-glow:     rgba(99,102,241,0.4);
-  --blue-soft:     rgba(99,102,241,0.12);
-  --blue-border:   rgba(129,140,248,0.3);
-  --glass-bg:      rgba(255,255,255,0.05);
-  --glass-bg2:     rgba(255,255,255,0.09);
-  --glass-border:  rgba(255,255,255,0.09);
-  --glass-border2: rgba(255,255,255,0.15);
-  --text-dim:      rgba(255,255,255,0.45);
-  --text-mute:     rgba(255,255,255,0.22);
-  --page-bg:       #04040e;
-}
-*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:'Outfit',sans-serif;background:var(--page-bg);color:#fff;min-height:100vh;overflow-x:hidden;padding-bottom:88px;}
+  :root{
+    --black:#0B0A09;--stone:#16130F;--stone2:#1E1A14;
+    --gold:#C9A24B;--gold-soft:#D8BE7E;--gold-bright:#EAD79E;
+    --cream:#ECE4D2;--muted:#A99E86;--line:rgba(201,162,75,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Jost',sans-serif;font-weight:300;background:var(--black);color:var(--cream);
+    line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  .marble{position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(ellipse 70% 50% at 20% 15%, rgba(40,34,26,.9), transparent 60%),
+    radial-gradient(ellipse 60% 55% at 85% 80%, rgba(34,29,22,.8), transparent 55%),
+    radial-gradient(ellipse 80% 60% at 60% 45%, rgba(22,19,15,1), transparent 70%),var(--black);}
+  .veins{position:fixed;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;opacity:.55}
+  .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;mix-blend-mode:screen;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;font-weight:500;line-height:1.05}
+  ::selection{background:var(--gold);color:var(--black)}
+  a{color:inherit;text-decoration:none}
+  .gold-text{color:var(--gold)}
+  .eyebrow{font-family:'Jost';font-weight:400;font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);display:inline-block;margin-bottom:1.1rem}
+  .gold-rule{width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.4rem auto;border:0}
+  .wrap{width:min(1180px,92vw);margin-inline:auto}
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem clamp(1.2rem,4vw,2.6rem);background:rgba(11,10,9,.35);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);transition:padding .3s,background .3s}
+  nav.scrolled{padding-block:.7rem;background:rgba(11,10,9,.85)}
+  .brand{font-family:'Cormorant Garamond';font-weight:600;font-size:1.4rem;letter-spacing:.04em;display:flex;align-items:center;gap:.5rem}
+  .brand b{color:var(--gold);font-weight:600}
+  .nav-links{display:flex;gap:2.2rem;align-items:center}
+  .nav-links a{font-family:'Jost';font-weight:300;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cream);position:relative;padding-bottom:3px;transition:color .25s}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+  .nav-links a:hover{color:var(--gold)}
+  .nav-links a:hover::after{width:100%}
+  .burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:6px;z-index:210}
+  .burger span{width:26px;height:1.5px;background:var(--gold);transition:.3s}
+  .burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+  @media(max-width:860px){
+    nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(11,10,9,.92)}
+    nav.scrolled{background:rgba(11,10,9,.96)}
+    .brand{position:relative;z-index:212}
+    .nav-links{position:fixed;inset:0;z-index:205;flex-direction:column;justify-content:center;gap:2.4rem;
+      background:rgba(11,10,9,.98);transform:translateX(100%);transition:transform .4s cubic-bezier(.7,0,.2,1)}
+    .nav-links.open{transform:translateX(0)}
+    .nav-links a{font-size:1.1rem;letter-spacing:.28em}
+    .burger{display:flex}}
 
-/* BG ORBS */
-.bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:drift 22s ease-in-out infinite alternate;}
-.orb-1{width:520px;height:520px;background:radial-gradient(circle,#4f46e5 0%,transparent 70%);top:-120px;left:-120px;opacity:.35;animation-duration:24s;}
-.orb-2{width:420px;height:420px;background:radial-gradient(circle,#7c3aed 0%,transparent 70%);bottom:15%;right:-80px;opacity:.3;animation-duration:19s;animation-delay:-6s;}
-.orb-3{width:320px;height:320px;background:radial-gradient(circle,#2563eb 0%,transparent 70%);top:42%;left:28%;opacity:.2;animation-duration:26s;animation-delay:-12s;}
-@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(35px,28px) scale(1.08);}}
+  /* HERO with video */
+  header{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:8rem 1.2rem 5rem;position:relative;overflow:hidden}
+  .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--black)}
+  .hero-media .fallback{position:absolute;inset:0;background-size:cover;background-position:center;
+    animation:kenburns 18s ease-in-out infinite alternate;filter:brightness(.55) contrast(1.05)}
+  @keyframes kenburns{from{transform:scale(1.05)}to{transform:scale(1.18)}}
+  .hero-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.55) contrast(1.05)}
+  .hero-media::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(11,10,9,.55),rgba(11,10,9,.35) 40%,rgba(11,10,9,.85));}
+  .hero-frame{position:relative;z-index:2;border:1px solid var(--line);padding:clamp(2.2rem,6vw,4.5rem) clamp(1.5rem,5vw,4rem);max-width:760px;
+    background:rgba(11,10,9,.18);backdrop-filter:blur(2px)}
+  .hero-frame::before,.hero-frame::after{content:"";position:absolute;width:18px;height:18px;border:1px solid var(--gold)}
+  .hero-frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+  .hero-frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+  .hero-title{font-size:clamp(3.2rem,13vw,7rem);font-weight:600;letter-spacing:.02em;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold) 55%,#9c7a32);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero-loc{font-family:'Jost';font-weight:300;font-size:.78rem;letter-spacing:.4em;text-transform:uppercase;color:var(--cream);margin-bottom:1.4rem;opacity:.85}
+  .hero-tag{font-family:'Cormorant Garamond';font-style:italic;font-weight:500;font-size:clamp(1.25rem,3.5vw,1.9rem);color:var(--cream);max-width:24ch;margin:1.6rem auto 0;line-height:1.4}
+  .hero-cta{margin-top:2.6rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:'Jost';font-weight:400;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;padding:1rem 2rem;border:1px solid var(--gold);transition:.3s;cursor:pointer}
+  .btn-gold{background:var(--gold);color:var(--black)}
+  .btn-gold:hover{background:var(--gold-bright);border-color:var(--gold-bright)}
+  .btn-line{color:var(--gold);background:rgba(11,10,9,.3)}
+  .btn-line:hover{background:rgba(201,162,75,.18)}
+  .scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;font-family:'Jost';font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cream);animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0);opacity:.5}50%{transform:translate(-50%,8px);opacity:1}}
 
-/* GRAIN */
-body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.55;}
+  section{padding:clamp(4rem,9vw,7rem) 0}
+  .sec-title{text-align:center;margin-bottom:clamp(2.5rem,6vw,4rem)}
+  .sec-title h2{font-size:clamp(2.4rem,7vw,4rem);font-weight:500;color:var(--cream)}
+  .sec-title h2 em{font-style:italic;color:var(--gold)}
+  .about{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,4.5rem);align-items:center}
+  @media(max-width:820px){.about{grid-template-columns:1fr;gap:2.5rem;text-align:center}}
+  .about p{font-size:1.08rem;color:#cbc2ad;margin-bottom:1.2rem;font-weight:300}
+  .about .lead{font-family:'Cormorant Garamond';font-size:clamp(1.5rem,3.5vw,2.1rem);font-weight:500;line-height:1.35;color:var(--cream);margin-bottom:1.6rem}
+  .about .lead .gold-text{font-style:italic}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+  .stat{background:var(--stone);padding:clamp(1.4rem,4vw,2.2rem);text-align:center}
+  .stat .num{font-family:'Cormorant Garamond';font-weight:600;font-size:clamp(2.4rem,6vw,3.4rem);
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .stat .lab{font-family:'Jost';font-weight:300;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.6rem}
+  .moments{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+  @media(max-width:820px){.moments{grid-template-columns:1fr}}
+  .moment{border:1px solid var(--line);padding:clamp(1.8rem,4vw,2.6rem);position:relative;transition:.4s;text-align:center}
+  .moment:hover{background:var(--stone);border-color:var(--gold)}
+  .moment .time{font-family:'Cormorant Garamond';font-style:italic;font-weight:500;font-size:1.6rem;color:var(--gold)}
+  .moment h3{font-size:1.7rem;font-weight:500;margin:.6rem 0 .9rem;color:var(--cream)}
+  .moment p{font-size:.95rem;color:var(--muted);font-weight:300}
 
-/* FONT */
-.syne{font-family:'Syne',sans-serif;}
+  /* CAROUSEL */
+  .carousel{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--stone)}
+  .carousel::after{content:"";position:absolute;inset:9px;border:1px solid rgba(201,162,75,.3);pointer-events:none;z-index:4}
+  .track{display:flex;transition:transform .7s cubic-bezier(.6,0,.2,1)}
+  .slide{flex:0 0 100%;position:relative;aspect-ratio:16/9}
+  @media(max-width:600px){.slide{aspect-ratio:4/3}}
+  .slide img{width:100%;height:100%;object-fit:cover;display:block;filter:contrast(1.04) saturate(.96)}
+  .slide::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(11,10,9,.65))}
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:48px;height:48px;border:1px solid var(--gold);
+    background:rgba(11,10,9,.45);color:var(--gold);font-family:'Cormorant Garamond';font-size:1.5rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:.3s;backdrop-filter:blur(4px)}
+  .arrow:hover{background:var(--gold);color:var(--black)}
+  .arrow.prev{left:1rem}.arrow.next{right:1rem}
+  @media(max-width:600px){.arrow{width:40px;height:40px;font-size:1.2rem}.arrow.prev{left:.5rem}.arrow.next{right:.5rem}}
+  .dots{display:flex;gap:.6rem;justify-content:center;margin-top:1.4rem}
+  .dot{width:9px;height:9px;border:1px solid var(--gold);background:transparent;cursor:pointer;transition:.3s;transform:rotate(45deg)}
+  .dot.active{background:var(--gold)}
+  .counter{position:absolute;bottom:1rem;right:1.2rem;z-index:5;font-family:'Jost';font-weight:300;font-size:.78rem;letter-spacing:.2em;color:var(--cream)}
+  .counter b{color:var(--gold);font-weight:400}
 
-/* GLASS */
-.glass{background:var(--glass-bg);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glass-border);}
-.glass-dark{background:rgba(4,4,18,0.72);backdrop-filter:blur(36px) saturate(180%);-webkit-backdrop-filter:blur(36px) saturate(180%);border:1px solid var(--glass-border);}
-
-/* HEADER */
-.header{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(4,4,18,0.72);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.07);}
-.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:.07em;}
-.logo-n{color:#fff;}.logo-p{color:var(--blue-light);}
-.avatar-btn{width:38px;height:38px;border-radius:50%;background:var(--blue-soft);border:1.5px solid var(--blue-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;color:var(--blue-light);}
-.avatar-btn:hover{background:rgba(37,99,235,.25);box-shadow:0 0 20px var(--blue-glow);}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:76px;display:flex;align-items:center;padding:0 10px;padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(4,4,18,0.82);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-top:1px solid rgba(255,255,255,0.07);gap:4px;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:56px;border-radius:16px;cursor:pointer;transition:all .22s ease;border:none;background:transparent;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;}
-.nav-item svg{width:22px;height:22px;transition:all .22s ease;}
-.nav-item.active{background:var(--blue-soft);color:var(--blue-light);border:1px solid var(--blue-border);}
-.nav-item.active svg{filter:drop-shadow(0 0 6px rgba(96,165,250,.7));}
-
-/* SECTIONS */
-.section{display:none;padding:78px 16px 20px;min-height:100vh;position:relative;z-index:2;}
-.section.active{display:block;animation:fadeUp .3s ease forwards;}
-
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.au{animation:fadeUp .4s ease forwards;opacity:0;}
-.d1{animation-delay:.04s;}.d2{animation-delay:.1s;}.d3{animation-delay:.16s;}.d4{animation-delay:.22s;}.d5{animation-delay:.28s;}
-
-/* BUTTONS */
-.btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;padding:14px 22px;border:none;border-radius:14px;cursor:pointer;position:relative;overflow:hidden;transition:all .25s ease;box-shadow:0 4px 20px rgba(37,99,235,.4),0 1px 0 rgba(255,255,255,.12) inset;}
-.btn-p::before{content:'';position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%);pointer-events:none;}
-.btn-p:hover{background:#4f46e5;box-shadow:0 6px 28px var(--blue-glow),0 1px 0 rgba(255,255,255,.12) inset;transform:translateY(-1px);}
-.btn-p:active{transform:translateY(0);}
-.btn-p:disabled{opacity:.38;cursor:not-allowed;transform:none;}
-.btn-g{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--glass-bg);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:13px 20px;border:1px solid var(--glass-border2);border-radius:14px;cursor:pointer;transition:all .22s ease;backdrop-filter:blur(10px);}
-.btn-g:hover{background:var(--glass-bg2);color:#fff;border-color:rgba(255,255,255,.25);}
-.fav-btn{position:absolute;top:12px;left:12px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);transition:all 0.2s ease;}
-.fav-btn:hover{transform:scale(1.1);background:rgba(255,255,255,0.1);}
-.fav-btn.active svg{fill:#ef4444;stroke:#ef4444;}
-
-/* INPUTS */
-.f-wrap{position:relative;margin-bottom:15px;}
-.f-label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase;}
-.f-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:all .22s ease;appearance:none;}
-.f-input::placeholder{color:var(--text-mute);}
-.f-input:focus{border-color:var(--blue-light);background:rgba(37,99,235,.08);box-shadow:0 0 0 3px rgba(37,99,235,.15);}
-.f-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--text-mute);cursor:pointer;padding:4px;transition:color .2s;}
-.f-eye:hover{color:var(--blue-light);}
-
-/* PILL */
-.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:500;}
-.pill-b{background:var(--blue-soft);border:1px solid var(--blue-border);color:var(--blue-light);}
-.dot{width:6px;height:6px;border-radius:50%;background:#22d3ee;box-shadow:0 0 8px #22d3ee;animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-
-/* SECTION LABEL */
-.sec-lbl{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue-light);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
-.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--blue-border),transparent);}
-
-/* HERO */
-.hero-title{font-family:'Syne',sans-serif;font-size:clamp(46px,13vw,82px);font-weight:800;line-height:.9;letter-spacing:-.02em;}
-.text-gradient{background:linear-gradient(to right, #fff, var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-
-/* SKELETON LOAD */
-@keyframes shimmer{0%{background-position:-468px 0}100%{background-position:468px 0}}
-.loading-shimmer{background:#1a1a1a;background-image:linear-gradient(to right,#1a1a1a 0%,#222 20%,#1a1a1a 40%,#1a1a1a 100%);background-repeat:no-repeat;background-size:800px 104px;display:inline-block;position:relative;animation:shimmer 1.5s linear infinite forwards;}
-
-
-/* GENRE SCROLL */
-.g-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px;}
-.g-scroll::-webkit-scrollbar{display:none;}
-.g-chip{flex-shrink:0;padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s ease;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text-dim);white-space:nowrap;}
-.g-chip.active,.g-chip:hover{background:var(--blue-soft);border-color:var(--blue-border);color:var(--blue-light);}
-
-/* EVENTS GRID */
-.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(min-width:480px){.ev-grid{grid-template-columns:repeat(3,1fr);}}
-
-/* EVENT CARD */
-.ev-card{border-radius:22px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .4s cubic-bezier(.165,.84,.44,1);position:relative;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-.ev-card:hover{transform:translateY(-8px);border-color:var(--blue-border);box-shadow:0 22px 40px rgba(0,0,0,0.4),0 0 20px var(--blue-soft);}
-.ev-card:active{transform:scale(.98);}
-.ev-img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.165,.84,.44,1);}
-.ev-card:hover .ev-img{transform:scale(1.05);}
-.ev-img-wrap{overflow:hidden;position:relative;}
-.ev-img-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,18,.95) 0%,rgba(4,4,18,.25) 55%,transparent 100%);}
-.ev-genre{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:3px 9px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.85);}
-
-/* SM CARD */
-.h-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px;}
-.h-scroll::-webkit-scrollbar{display:none;}
-.ev-sm{flex-shrink:0;width:185px;border-radius:16px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;transition:all .25s ease;}
-.ev-sm:hover{border-color:var(--blue-border);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 20px rgba(37,99,235,.12);}
-
-/* TICKET OPTION */
-.tk-opt{border-radius:16px;padding:16px;border:1.5px solid var(--glass-border);background:var(--glass-bg);cursor:pointer;transition:all .22s ease;position:relative;overflow:hidden;}
-.tk-opt:hover{border-color:var(--blue-border);background:var(--blue-soft);}
-.tk-opt.selected{border-color:var(--blue-light);background:var(--blue-soft);box-shadow:0 0 0 3px rgba(37,99,235,.18),0 4px 20px rgba(37,99,235,.18);}
-.tk-opt.selected::after{content:'✓';position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
-.tk-opt.disabled{opacity:.32;pointer-events:none;}
-
-/* PROGRESS */
-.prog{display:flex;align-items:flex-start;margin-bottom:26px;gap:0;}
-.ps{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;}
-.ps:not(:last-child)::after{content:'';position:absolute;top:15px;left:50%;right:-50%;height:1.5px;background:rgba(255,255,255,.08);z-index:0;}
-.ps.done:not(:last-child)::after{background:var(--blue);}
-.pdot{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-dim);z-index:1;transition:all .25s ease;}
-.ps.active .pdot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 16px rgba(37,99,235,.5);}
-.ps.done .pdot{background:var(--blue);border-color:var(--blue);color:#fff;}
-.plbl{font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mute);}
-.ps.active .plbl{color:var(--blue-light);}
-
-/* MODAL */
-.modal-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}
-.modal-ov.show{opacity:1;pointer-events:all;}
-.modal-sheet{width:100%;max-width:480px;background:rgba(8,8,22,0.92);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border:1px solid rgba(255,255,255,.1);border-radius:28px 28px 0 0;padding:12px 22px 40px;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);max-height:92vh;overflow-y:auto;}
-.modal-ov.show .modal-sheet{transform:translateY(0);}
-.modal-handle{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.14);margin:0 auto 20px;}
-
-/* AUTH TABS */
-.auth-tabs{display:flex;gap:0;border-radius:12px;background:rgba(255,255,255,.05);padding:4px;margin-bottom:22px;}
-.auth-tab{flex:1;padding:10px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-dim);transition:all .2s;text-align:center;}
-.auth-tab.active{background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(37,99,235,.4);}
-
-/* DROPDOWN */
-.dd{position:absolute;top:66px;right:16px;width:210px;border-radius:18px;overflow:hidden;z-index:300;transform:scale(.9) translateY(-8px);transform-origin:top right;opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.34,1.56,.64,1);}
-.dd.show{opacity:1;pointer-events:all;transform:scale(1) translateY(0);}
-.dd-item{display:flex;align-items:center;gap:11px;padding:13px 15px;font-size:14px;font-weight:400;cursor:pointer;transition:background .15s;color:rgba(255,255,255,.8);}
-.dd-item:hover{background:rgba(255,255,255,.06);}
-.dd-item.red{color:#f87171;}.dd-item.red:hover{background:rgba(248,113,113,.1);}
-
-/* PROCESSING */
-.proc-ov{position:fixed;inset:0;z-index:400;background:rgba(4,4,14,.92);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
-.proc-ov.show{display:flex;animation:fadeUp .2s ease;}
-.spin{width:52px;height:52px;border:3px solid rgba(37,99,235,.2);border-top-color:var(--blue-light);border-radius:50%;animation:spin .75s linear infinite;box-shadow:0 0 28px rgba(37,99,235,.3);}
-@keyframes spin{to{transform:rotate(360deg);}}
-.proc-txt{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--blue-light);animation:blink 1.2s ease infinite;}
-
-/* PASS CARD */
-.pass-card{max-width:340px;margin:0 auto;border-radius:24px;overflow:hidden;background:rgba(6,6,20,.96);border:1px solid rgba(37,99,235,.45);box-shadow:0 0 60px rgba(37,99,235,.22),0 30px 80px rgba(0,0,0,.6);position:relative;}
-.pass-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(37,99,235,.1) 0%,transparent 55%);pointer-events:none;}
-.pass-head{background:linear-gradient(135deg,var(--blue) 0%,#1e3a8a 100%);padding:22px 22px 18px;position:relative;overflow:hidden;}
-.pass-head::after{content:'NP';position:absolute;right:-8px;bottom:-14px;font-family:'Syne',sans-serif;font-size:78px;font-weight:800;color:rgba(255,255,255,.06);letter-spacing:-.04em;line-height:1;}
-.pass-div{display:flex;align-items:center;margin:0 -1px;}
-.pass-div::before,.pass-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-.notch{width:22px;height:22px;border-radius:50%;background:var(--page-bg);flex-shrink:0;border:1px solid rgba(37,99,235,.3);margin:0 -11px;}
-.pass-qr{background:#fff;padding:20px;display:flex;align-items:center;justify-content:center;}
-#qrcode,#qrcode-detail{display:flex;align-items:center;justify-content:center;}
-#qrcode canvas,#qrcode-detail canvas,#qrcode img,#qrcode-detail img{width:160px !important;height:160px !important;}
-
-/* MISC */
-.price-tag{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--blue-light);}
-.info-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
-.info-row:last-child{border:none;}
-.iw{width:36px;height:36px;border-radius:10px;background:var(--blue-soft);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.back-btn{display:inline-flex;align-items:center;gap:7px;background:none;border:none;color:var(--text-dim);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;padding:0;margin-bottom:20px;transition:color .2s;}
-.back-btn:hover{color:var(--blue-light);}
-.detail-cover{margin:0 -16px;height:255px;position:relative;overflow:hidden;}
-.detail-cover img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.3);}
-.detail-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(4,4,18,0) 25%,rgba(4,4,18,1) 100%);}
-.detail-cnt{position:absolute;bottom:18px;left:18px;right:18px;}
-.empty-st{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;gap:14px;}
-.search-bar{display:flex;align-items:center;gap:10px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:12px 16px;transition:all .22s ease;}
-.search-bar:focus-within{border-color:var(--blue-border);background:rgba(37,99,235,.06);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
-.s-input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;}
-.s-input::placeholder{color:var(--text-mute);}
-::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(37,99,235,.35);border-radius:99px;}
+  .visit{display:grid;grid-template-columns:1fr 1.2fr;gap:clamp(1.5rem,4vw,2.6rem)}
+  @media(max-width:860px){.visit{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line);background:rgba(22,19,15,.6);padding:clamp(1.8rem,4vw,2.6rem)}
+  .panel h3{font-size:1.6rem;font-weight:500;color:var(--cream);margin-bottom:1.4rem;display:flex;align-items:center;gap:.6rem}
+  .panel h3::before{content:"";width:22px;height:1px;background:var(--gold)}
+  .hrow{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid rgba(201,162,75,.12);font-size:.95rem}
+  .hrow .d{color:var(--cream);font-weight:300}
+  .hrow .t{font-family:'Jost';letter-spacing:.08em;color:var(--gold-soft);font-size:.85rem}
+  .hrow.closed .t{color:#a8807f}
+  .addr{margin-top:1.6rem;font-size:.98rem;color:#cbc2ad;line-height:1.8}
+  .addr .k{font-family:'Jost';font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.3rem}
+  .map{border:1px solid var(--line);overflow:hidden;min-height:380px;position:relative}
+  .map iframe{width:100%;height:100%;min-height:380px;border:0;display:block;filter:grayscale(.55) sepia(.25) brightness(.85)}
+  footer{border-top:1px solid var(--line);padding:clamp(3rem,7vw,4.5rem) 0 2rem;text-align:center}
+  .foot-brand{font-family:'Cormorant Garamond';font-weight:600;font-size:clamp(2.4rem,7vw,3.4rem);letter-spacing:.04em}
+  .foot-brand b{color:var(--gold)}
+  .foot-tag{font-family:'Cormorant Garamond';font-style:italic;color:var(--muted);margin-top:.4rem;font-size:1.1rem}
+  .foot-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin:2rem 0}
+  .foot-links a{font-family:'Jost';font-weight:300;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);transition:.25s}
+  .foot-links a:hover{color:var(--gold)}
+  .copy{font-family:'Jost';font-weight:300;font-size:.7rem;letter-spacing:.12em;color:var(--muted);margin-top:1.5rem}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .note{font-family:'Jost';font-weight:300;font-size:.72rem;color:var(--muted);opacity:.7;margin-top:1.4rem;text-align:center}
 </style>
 </head>
 <body>
+<div class="marble"></div>
+<svg class="veins" viewBox="0 0 1200 1700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="goldVein" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7a5c20"/><stop offset=".5" stop-color="#EAD79E"/><stop offset="1" stop-color="#9c7a32"/>
+    </linearGradient>
+    <filter id="crack" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="4" seed="11" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="55"/>
+    </filter>
+  </defs>
+  <g filter="url(#crack)" fill="none" stroke="url(#goldVein)" stroke-linecap="round">
+    <path d="M-80 240 C 280 140 480 420 820 250 S 1320 480 1320 360" stroke-width="2.4" opacity=".8"/>
+    <path d="M-60 760 C 200 660 420 880 760 700 S 1180 520 1320 700" stroke-width="1.5" opacity=".55"/>
+    <path d="M120 -40 C 260 280 120 520 360 760 S 220 1160 480 1360" stroke-width="2" opacity=".6"/>
+    <path d="M1180 -40 C 980 240 1120 460 900 700 S 1080 1080 860 1340" stroke-width="1.7" opacity=".55"/>
+    <path d="M-80 1200 C 320 1100 540 1320 900 1180 S 1320 1360 1320 1280" stroke-width="2.2" opacity=".7"/>
+    <path d="M420 600 C 560 720 520 920 700 1000" stroke-width=".9" opacity=".4"/>
+    <path d="M760 320 C 820 460 980 480 1040 620" stroke-width=".8" opacity=".4"/>
+    <path d="M200 1000 C 300 1120 260 1320 420 1440" stroke-width=".8" opacity=".35"/>
+  </g>
+</svg>
+<div class="grain"></div>
 
-<!-- BG -->
-<div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-
-<!-- PROCESSING -->
-<div class="proc-ov" id="procOv">
-  <div class="spin"></div>
-  <div class="proc-txt" id="procTxt">Processing payment…</div>
-  <div style="font-size:13px;color:var(--text-mute);">Transazione sicura e cifrata</div>
-</div>
-
-<!-- AUTH MODAL -->
-<div class="modal-ov" id="authModal" onclick="closeAuthOut(event)">
-  <div class="modal-sheet" id="authSheet">
-    <div class="modal-handle"></div>
-    <div class="syne" style="font-size:26px;font-weight:800;margin-bottom:5px;">Benvenuto 👋</div>
-    <div style="font-size:14px;color:var(--text-dim);margin-bottom:22px;">Accedi o crea un account NIGHTPASS</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabL" onclick="switchTab('login')">Accedi</button>
-      <button class="auth-tab" id="tabR" onclick="switchTab('reg')">Registrati</button>
-    </div>
-    <!-- LOGIN -->
-    <div id="fLogin">
-      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="lEmail" placeholder="tua@email.it" autocomplete="email"/></div>
-      <div class="f-wrap" style="position:relative"><label class="f-label">Password</label><input type="password" class="f-input" id="lPass" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px"/><span class="f-eye" onclick="togEye('lPass',this)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span></div>
-      <div id="lErr" style="color:#f87171;font-size:13px;margin:-8px 0 10px;display:none;border-radius:8px;background:rgba(248,113,113,.1);padding:8px 12px;"></div>
-      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="doLogin()">Accedi al mio account</button>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text-mute);">Demo: qualsiasi email + password (min 6 char)</div>
-    </div>
-    <!-- REGISTER -->
-    <div id="fReg" style="display:none">
-      <div class="f-wrap"><label class="f-label">Nome completo</label><input type="text" class="f-input" id="rName" placeholder="Mario Rossi" autocomplete="name"/></div>
-      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="rEmail" placeholder="tua@email.it" autocomplete="email"/></div>
-      <div class="f-wrap" style="position:relative"><label class="f-label">Password</label><input type="password" class="f-input" id="rPass" placeholder="Min 6 caratteri" autocomplete="new-password" style="padding-right:44px"/><span class="f-eye" onclick="togEye('rPass',this)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span></div>
-      <div id="rErr" style="color:#f87171;font-size:13px;margin:-8px 0 10px;display:none;border-radius:8px;background:rgba(248,113,113,.1);padding:8px 12px;"></div>
-      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="doReg()">Crea account gratuito</button>
-    </div>
+<nav id="nav">
+  <a href="#top" class="brand">Rewind<b>bar</b></a>
+  <div class="nav-links" id="navlinks">
+    <a href="#storia" data-close>Storia</a>
+    <a href="#momenti" data-close>I momenti</a>
+    <a href="#gallery" data-close>Gallery</a>
+    <a href="#visita" data-close>Dove siamo</a>
   </div>
-</div>
-
-<!-- USER DROPDOWN -->
-<div class="glass-dark dd" id="userDD">
-  <div style="padding:14px 15px;border-bottom:1px solid rgba(255,255,255,.06);">
-    <div style="font-size:13px;font-weight:600;" id="ddName">—</div>
-    <div style="font-size:12px;color:var(--text-dim);" id="ddEmail">—</div>
-  </div>
-  <div class="dd-item" onclick="navigate('passes');closeDd()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a3 3 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>I miei Pass</div>
-  <div class="dd-item red" onclick="doLogout()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Esci</div>
-</div>
-
-<!-- HEADER -->
-<header class="header">
-  <div class="logo"><span class="logo-n">NIGHT</span><span class="logo-p">PASS</span></div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div class="pill pill-b au d1"><div class="dot"></div><span>Live</span></div>
-    <div class="avatar-btn" id="avatarBtn" onclick="toggleDD()">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-    </div>
-  </div>
-</header>
-
-<!-- HOME -->
-<section class="section active" id="sHome">
-  <div style="padding-top:10px;margin-bottom:28px;">
-    <div class="pill pill-b au d1" style="margin-bottom:14px;"><div class="dot"></div><span>Milano · Questa Settimana</span></div>
-    <div class="hero-title au d2"><span style="color:#fff">SENTI</span><br><span class="text-gradient">LA</span><br><span style="color:#fff">NOTTE.</span></div>
-    <div style="font-size:14px;color:var(--text-dim);margin-top:10px;" class="au d3">Ticketing per club, rave e cultura underground</div>
-  </div>
-  <div class="search-bar au d3" style="margin-bottom:20px;">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input class="s-input" id="sInput" placeholder="Cerca eventi, artisti, venue…" oninput="filterEv(this.value)"/>
-  </div>
-  <div class="g-scroll au d4" style="margin-bottom:24px;">
-    <div class="g-chip active" onclick="setGenre(this,'tutti')">✦ Tutti</div>
-    <div class="g-chip" onclick="setGenre(this,'techno')">Techno</div>
-    <div class="g-chip" onclick="setGenre(this,'house')">House</div>
-    <div class="g-chip" onclick="setGenre(this,'jungle')">Drum & Bass</div>
-    <div class="g-chip" onclick="setGenre(this,'ambient')">Ambient</div>
-    <div class="g-chip" onclick="setGenre(this,'rave')">Rave</div>
-  </div>
-  <div class="sec-lbl au d4" style="margin-bottom:14px;">🔥 Eventi caldi</div>
-  <div class="ev-grid au d5" id="evGrid"></div>
-  <div style="margin-top:30px;">
-    <div class="sec-lbl" style="margin-bottom:14px;">📅 In arrivo</div>
-    <div class="h-scroll" id="upStrip"></div>
-  </div>
-</section>
-
-<!-- EVENT -->
-<section class="section" id="sEvent"><div id="evDetail"></div></section>
-
-<!-- CHECKOUT -->
-<section class="section" id="sCheckout"><div id="checkoutC"></div></section>
-
-<!-- TICKET -->
-<section class="section" id="sTicket"><div id="ticketC"></div></section>
-
-<!-- SEARCH -->
-<section class="section" id="sSearch">
-  <div style="padding-top:10px;">
-    <div class="sec-lbl" style="margin-bottom:8px;">🔍 Esplora</div>
-    <div class="hero-title" style="font-size:clamp(38px,10vw,58px);margin-bottom:20px;">TROVA<br><span style="color:var(--blue-light)">IL TUO</span><br>EVENTO</div>
-    <div class="search-bar" style="margin-bottom:22px;">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="s-input" id="sInput2" placeholder="Cerca…" oninput="filterEv(this.value)"/>
-    </div>
-    <div class="ev-grid" id="srGrid"></div>
-  </div>
-</section>
-
-<!-- PASSES -->
-<section class="section" id="sPasses">
-  <div style="padding-top:10px;">
-    <div class="sec-lbl" style="margin-bottom:8px;">🎟 I miei Pass</div>
-    <div class="hero-title" style="font-size:clamp(38px,10vw,58px);margin-bottom:24px;">MY<br><span style="color:var(--blue-light)">PASSES</span></div>
-    <div id="passesList"></div>
-  </div>
-</section>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <button class="nav-item active" id="navH" onclick="go('home')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg>
-    Home
-  </button>
-  <button class="nav-item" id="navS" onclick="go('search')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/></svg>
-    Cerca
-  </button>
-  <button class="nav-item" id="navP" onclick="goPasses()">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a3 3 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
-    I miei Pass
-  </button>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
-<script>
-// ═══════════════ DATA ═══════════════
-const EVENTS=[
-  {id:'E001',title:'VOID RAVE',genre:'techno',date:'Sab 19 Apr 2025',time:'23:00 → 07:00',venue:'Warehouse 23',city:'Milano',desc:'Un viaggio sonoro nei territori più oscuri del techno industriale. Lineup internazionale per una notte senza compromessi. Il warehouse sarà trasformato con installazioni laser e un sistema audio da 50.000W che sposterà il suolo sotto i tuoi piedi.',img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:12,left:3,perks:'Ingresso base · Disponibilità limitata'},{type:'General Admission',price:18,left:120,perks:'Ingresso standard · Tutte le aree'},{type:'VIP Pack',price:45,left:15,perks:'Area VIP · Drink incluso · Priority entry'}]},
-  {id:'E002',title:'DEEP SPACE',genre:'house',date:'Dom 20 Apr 2025',time:'22:00 → 05:00',venue:'Fabric Club',city:'Roma',desc:'Un viaggio nella deep house più ricercata d\'Europa. DJ set continui di 12 ore da artisti selezionati. Tre floor con sistemi audio differenti, ogni sala un\'esperienza sonora unica.',img:'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:8,left:0,perks:'ESAURITO'},{type:'General Admission',price:15,left:85,perks:'Ingresso standard · Tutti i floor'},{type:'VIP Pack',price:38,left:8,perks:'Lounge privata · Open bar 2h · Goodie bag'}]},
-  {id:'E003',title:'CONCRETE JUNGLE',genre:'jungle',date:'Ven 25 Apr 2025',time:'22:30 → 06:00',venue:'Ex-Dogana',city:'Firenze',desc:'Il Drum & Bass torna alle sue radici jungle. Un evento storico con i pionieri del genere e le nuove generazioni di MC e producer. Soundsystem roots, ambiente underground puro.',img:'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:10,left:20,perks:'Ingresso anticipato · Risparmia il 40%'},{type:'General Admission',price:16,left:200,perks:'Ingresso standard'},{type:'VIP Pack',price:40,left:25,perks:'Meet & Greet · VIP Bar · Merch esclusivo'}]},
-  {id:'E004',title:'NULL WAVE',genre:'ambient',date:'Sab 26 Apr 2025',time:'20:00 → 04:00',venue:'Spazio Mil',city:'Sesto S.G.',desc:'Ambient electronics e drone music in uno spazio industriale trasformato in cattedrale sonora. Performance live di artisti visivi e musicali in dialogo continuo.',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:9,left:0,perks:'ESAURITO'},{type:'General Admission',price:14,left:60,perks:'Ingresso + installazioni'},{type:'VIP Pack',price:35,left:10,perks:'Catalogo esclusivo · Seat riservato · Reception'}]},
-  {id:'E005',title:'ACID BATH',genre:'rave',date:'Sab 3 Mag 2025',time:'00:00 → 12:00',venue:'Location Segreta',city:'Torino',desc:'La location sarà rivelata 24h prima via SMS. Un rave che inizia a mezzanotte e termina solo quando il sole è alto nel cielo. 12 ore di acid house, trance e techno senza sosta.',img:'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:15,left:5,perks:'LAST 5 · Unlock location early'},{type:'General Admission',price:22,left:300,perks:'12h access · Full lineup'},{type:'VIP Pack',price:55,left:20,perks:'Pre-rave dinner · Camping zone · Priority'}]},
-  {id:'E006',title:'HEXADECIMAL',genre:'techno',date:'Dom 4 Mag 2025',time:'22:00 → 06:00',venue:'OGR Torino',city:'Torino',desc:'L\'OGR apre le sue porte per una notte di techno sperimentale. Cinque artisti internazionali per un viaggio nel suono del futuro. Sistema audio d\'avanguardia e visual art immersiva.',img:'https://images.unsplash.com/photo-1526478806334-5fd488fcaabc?w=800&auto=format&fit=crop&q=80',tickets:[{type:'Early Bird',price:18,left:0,perks:'ESAURITO'},{type:'General Admission',price:25,left:150,perks:'Accesso completo · Main room + Annex'},{type:'VIP Pack',price:60,left:12,perks:'Balconata riservata · 3 drink · Artist meet'}]}
-];
-
-// ═══════════════ STATE ═══════════════
-let users   = JSON.parse(localStorage.getItem('np_users')||'[]');
-let curUser = JSON.parse(localStorage.getItem('np_user')||'null');
-let passes  = JSON.parse(localStorage.getItem('np_passes')||'[]');
-let selEv=null, selTk=null, curGenre='tutti';
-
-const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-
-// ═══════════════ AUTH ═══════════════
-function updateAvatar(){
-  const btn=document.getElementById('avatarBtn');
-  if(curUser){
-    btn.innerHTML=`<span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${curUser.name.charAt(0).toUpperCase()}</span>`;
-    btn.style.cssText='width:38px;height:38px;border-radius:50%;background:var(--blue);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:#fff;box-shadow:0 0 16px rgba(37,99,235,.5);';
-    document.getElementById('ddName').textContent=curUser.name;
-    document.getElementById('ddEmail').textContent=curUser.email;
-  } else {
-    btn.innerHTML=`<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>`;
-    btn.style.cssText='width:38px;height:38px;border-radius:50%;background:var(--blue-soft);border:1.5px solid var(--blue-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--blue-light);';
-  }
-}
-function toggleDD(){
-  if(!curUser){openAuth();return;}
-  document.getElementById('userDD').classList.toggle('show');
-}
-function closeDd(){document.getElementById('userDD').classList.remove('show');}
-document.addEventListener('click',e=>{if(!e.target.closest('#avatarBtn')&&!e.target.closest('#userDD'))closeDd();});
-
-function openAuth(){document.getElementById('authModal').classList.add('show');}
-function closeAuth(){document.getElementById('authModal').classList.remove('show');}
-function closeAuthOut(e){if(e.target===document.getElementById('authModal'))closeAuth();}
-
-function switchTab(t){
-  document.getElementById('tabL').classList.toggle('active',t==='login');
-  document.getElementById('tabR').classList.toggle('active',t==='reg');
-  document.getElementById('fLogin').style.display=t==='login'?'':'none';
-  document.getElementById('fReg').style.display=t==='reg'?'':'none';
-  ['lErr','rErr'].forEach(id=>{document.getElementById(id).style.display='none';});
-}
-
-function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
-
-function doLogin(){
-  const email=document.getElementById('lEmail').value.trim().toLowerCase();
-  const pass=document.getElementById('lPass').value;
-  document.getElementById('lErr').style.display='none';
-  if(!email||!pass)return showErr('lErr','Compila tutti i campi.');
-  if(pass.length<6)return showErr('lErr','Password troppo corta (min 6 caratteri).');
-  const u=users.find(u=>u.email===email&&u.password===pass);
-  if(!u)return showErr('lErr','Email o password non corretti. Registrati se non hai un account.');
-  curUser={name:u.name,email:u.email};
-  save('np_user',curUser);
-  closeAuth();
-  updateAvatar();
-  toast(`Bentornato, ${u.name.split(' ')[0]}! 👋`);
-}
-
-function doReg(){
-  const name=document.getElementById('rName').value.trim();
-  const email=document.getElementById('rEmail').value.trim().toLowerCase();
-  const pass=document.getElementById('rPass').value;
-  document.getElementById('rErr').style.display='none';
-  if(!name||!email||!pass)return showErr('rErr','Compila tutti i campi.');
-  if(!email.includes('@'))return showErr('rErr','Email non valida.');
-  if(pass.length<6)return showErr('rErr','Password troppo corta (min 6 caratteri).');
-  if(users.find(u=>u.email===email))return showErr('rErr','Email già registrata. Prova ad accedere.');
-  users.push({name,email,password:pass});
-  save('np_users',users);
-  curUser={name,email};
-  save('np_user',curUser);
-  closeAuth();
-  updateAvatar();
-  toast(`Benvenuto su NIGHTPASS, ${name.split(' ')[0]}! 🎉`);
-}
-
-function doLogout(){
-  curUser=null;
-  localStorage.removeItem('np_user');
-  closeDd();
-  updateAvatar();
-  go('home');
-  toast('Sei uscito dal tuo account.');
-}
-
-function togEye(id,btn){
-  const inp=document.getElementById(id);
-  inp.type=inp.type==='password'?'text':'password';
-}
-
-// ═══════════════ TOAST ═══════════════
-function toast(msg){
-  const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);background:rgba(8,8,22,.94);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 20px;font-size:14px;font-weight:500;color:#fff;z-index:500;white-space:nowrap;transition:all .3s ease;opacity:0;max-width:90vw;text-align:center;';
-  t.textContent=msg;
-  document.body.appendChild(t);
-  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(12px)';setTimeout(()=>t.remove(),300);},2800);
-}
-
-// ═══════════════ NAVIGATE ═══════════════
-function go(sc){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:{s:'sHome',n:'navH'},search:{s:'sSearch',n:'navS'},passes:{s:'sPasses',n:'navP'},event:{s:'sEvent'},checkout:{s:'sCheckout'},ticket:{s:'sTicket'}};
-  const t=map[sc];if(!t)return;
-  document.getElementById(t.s).classList.add('active');
-  if(t.n)document.getElementById(t.n).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(sc==='search')renderSrGrid();
-  if(sc==='passes')renderPasses();
-}
-function goPasses(){if(!curUser){openAuth();return;}go('passes');}
-
-// ═══════════════ RENDER GRID ═══════════════
-function renderGrid(list,id){
-  const g=document.getElementById(id);if(!g)return;
-  if(!list.length){g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--text-dim);font-size:14px;">Nessun evento trovato</div>`;return;}
-  g.innerHTML=list.map((ev,i)=>{
-    const mp=Math.min(...ev.tickets.filter(t=>t.left>0).map(t=>t.price));
-    return`<div class="ev-card au" style="animation-delay:${i*.06}s;opacity:0;">
-      <div class="ev-img-wrap" onclick="openEvent('${ev.id}')">
-        <button class="fav-btn" onclick="toggleFav(event, this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
-        <img class="ev-img" src="${ev.img}" alt="${ev.title}" loading="lazy"/><div class="ev-img-ov"></div><div class="ev-genre">${ev.genre}</div>
-      </div>
-      <div style="padding:12px;">
-        <div class="syne" style="font-size:17px;font-weight:700;line-height:1.1;margin-bottom:4px;">${ev.title}</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-bottom:7px;">${ev.date}</div>
-        <div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg><span style="font-size:11px;color:var(--text-dim);">${ev.city}</span></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:11px;color:var(--text-mute);">Da</span><span class="price-tag">${isFinite(mp)?'€'+mp:'—'}</span></div>
-      </div></div>`;
-  }).join('');
-}
-
-function renderUpstrip(){
-  const s=document.getElementById('upStrip');
-  EVENTS.slice(3).forEach(ev=>{
-    const d=document.createElement('div');d.className='ev-sm';d.onclick=()=>openEvent(ev.id);
-    d.innerHTML=`<div style="height:100px;overflow:hidden;position:relative;"><img src="${ev.img}" alt="${ev.title}" style="width:100%;height:100%;object-fit:cover;filter:brightness(.6) saturate(1.2);transition:transform .4s ease;"/><div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,18,.85) 0%,transparent 60%);"></div></div><div style="padding:10px 12px;"><div class="syne" style="font-size:15px;font-weight:700;line-height:1.1;margin-bottom:3px;">${ev.title}</div><div style="font-size:10px;color:var(--blue-light);">${ev.date.split(' ').slice(0,3).join(' ')}</div></div>`;
-    s.appendChild(d);
-  });
-}
-
-function renderSrGrid(){renderGrid(EVENTS.filter(ev=>curGenre==='tutti'||ev.genre===curGenre),'srGrid');}
-
-function toggleFav(e, btn) {
-  e.stopPropagation();
-  btn.classList.toggle('active');
-  const isFav = btn.classList.contains('active');
-  toast(isFav ? 'Aggiunto ai preferiti ❤️' : 'Rimosso dai preferiti');
-}
-
-// ═══════════════ FILTER ═══════════════
-function filterEv(q=''){
-  const f=EVENTS.filter(ev=>(curGenre==='tutti'||ev.genre===curGenre)&&[ev.title,ev.venue,ev.city,ev.genre].some(s=>s.toLowerCase().includes(q.toLowerCase())));
-  renderGrid(f,'evGrid');renderGrid(f,'srGrid');
-}
-function setGenre(el,g){
-  curGenre=g;
-  document.querySelectorAll('.g-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  filterEv(document.getElementById('sInput')?.value||'');
-}
-
-// ═══════════════ EVENT DETAIL ═══════════════
-function openEvent(id){
-  selEv=EVENTS.find(e=>e.id===id);if(!selEv)return;
-  selTk=null;
-  const ev=selEv;
-  const tHTML=ev.tickets.map((t,i)=>`
-    <div class="tk-opt${t.left===0?' disabled':''}" id="tk-${i}" onclick="selTicket(${i})">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-        <div style="flex:1;min-width:0;">
-          <div class="syne" style="font-size:15px;font-weight:700;margin-bottom:2px;">${t.type}</div>
-          <div style="font-size:12px;color:var(--text-dim);">${t.perks}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div class="price-tag">€${t.price}</div>
-          <div style="font-size:10px;color:${t.left===0?'#f87171':'var(--text-mute)'};">${t.left===0?'Esaurito':t.left+' rimasti'}</div>
-        </div>
-      </div>
-    </div>`).join('');
-
-  document.getElementById('evDetail').innerHTML=`
-    <div class="detail-cover"><img src="${ev.img}" alt="${ev.title}"/><div class="detail-ov"></div>
-      <div class="detail-cnt">
-        <div class="pill pill-b" style="margin-bottom:8px;font-size:11px;">${ev.genre.toUpperCase()}</div>
-        <div class="syne" style="font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:.95;">${ev.title}</div>
-      </div>
+<header id="top">
+  <div class="hero-media">
+    <div class="fallback" id="heroFallback"></div>
+    <video autoplay muted loop playsinline preload="auto" poster="" id="heroVideo">
+      <!-- Sostituisci con il video del locale: una persona che prepara un drink -->
+      <source src="hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-frame reveal in">
+    <div class="hero-loc">Trarivi di Montescudo · Rimini</div>
+    <h1 class="hero-title">Rewindbar</h1>
+    <hr class="gold-rule">
+    <p class="hero-tag">Dall'alba all'aperitivo, il tempo si riavvolge sulle colline dell'entroterra riminese.</p>
+    <div class="hero-cta">
+      <a href="#visita" class="btn btn-gold">Vieni a trovarci</a>
+      <a href="#gallery" class="btn btn-line">Sfoglia la gallery</a>
     </div>
-    <div style="padding-top:18px;">
-      <button class="back-btn" onclick="go('home')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Tutti gli eventi</button>
-      <div class="glass" style="border-radius:20px;padding:16px;margin-bottom:20px;">
-        <div class="info-row"><div class="iw"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg></div><div><div style="font-size:14px;font-weight:500;">${ev.date}</div><div style="font-size:12px;color:var(--text-dim);">${ev.time}</div></div></div>
-        <div class="info-row"><div class="iw"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--blue-light)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg></div><div><div style="font-size:14px;font-weight:500;">${ev.venue}</div><div style="font-size:12px;color:var(--text-dim);">${ev.city}</div></div></div>
-      </div>
-      <p style="font-size:14px;line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:24px;">${ev.desc}</p>
-      <div class="sec-lbl" style="margin-bottom:14px;">🎟 Scegli il biglietto</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">${tHTML}</div>
-      <button class="btn-p" id="procBtn" style="width:100%;" disabled onclick="goCheckout()">Seleziona un biglietto per continuare</button>
-    </div>`;
-  go('event');
-}
+  </div>
+  <div class="scroll-hint">Scorri</div>
+</header>
 
-function selTicket(i){
-  document.querySelectorAll('.tk-opt').forEach(e=>e.classList.remove('selected'));
-  document.getElementById(`tk-${i}`)?.classList.add('selected');
-  selTk=selEv.tickets[i];
-  const btn=document.getElementById('procBtn');
-  if(btn){btn.removeAttribute('disabled');btn.textContent=`Acquista ${selTk.type} · €${selTk.price} →`;}
-}
+<section id="storia">
+  <div class="wrap about">
+    <div class="reveal">
+      <span class="eyebrow">La nostra storia</span>
+      <p class="lead">Un punto fermo a Trarivi, dove ci si ferma per il <span class="gold-text">caffè del mattino</span> e ci si ritrova all'ora dell'aperitivo.</p>
+      <p>Apriamo quando il paese si sta ancora svegliando e restiamo accesi fino a sera. Personale che ti conosce per nome, prezzi che hanno senso, e quella cura che fa la differenza.</p>
+      <p>Niente fronzoli: un bar fatto bene, con eleganza e senza fretta.</p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><div class="num">5,0</div><div class="lab">Stelle su Google</div></div>
+      <div class="stat"><div class="num">5:45</div><div class="lab">Apertura all'alba</div></div>
+      <div class="stat"><div class="num">6/7</div><div class="lab">Giorni a settimana</div></div>
+      <div class="stat"><div class="num">23:00</div><div class="lab">Fino a sera</div></div>
+    </div>
+  </div>
+</section>
 
-// ═══════════════ CHECKOUT ═══════════════
-function goCheckout(){
-  if(!selTk||!selEv)return;
-  if(!curUser){openAuth();return;}
-  const ev=selEv,tk=selTk;
-  document.getElementById('checkoutC').innerHTML=`
-    <div style="padding-top:12px;">
-      <button class="back-btn" onclick="go('event')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Torna all'evento</button>
-      <div class="prog">
-        <div class="ps done"><div class="pdot">✓</div><div class="plbl">Evento</div></div>
-        <div class="ps active"><div class="pdot">2</div><div class="plbl">Checkout</div></div>
-        <div class="ps"><div class="pdot">3</div><div class="plbl">Pass</div></div>
-      </div>
-      <div class="sec-lbl" style="margin-bottom:8px;">💳 Pagamento</div>
-      <div class="syne" style="font-size:30px;font-weight:800;margin-bottom:20px;">I TUOI <span style="color:var(--blue-light)">DATI</span></div>
-      <div class="glass" style="border-radius:20px;padding:16px;margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-light);margin-bottom:12px;">Riepilogo ordine</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div class="syne" style="font-size:16px;font-weight:700;">${ev.title}</div><div style="font-size:12px;color:var(--text-dim);">${tk.type}</div></div><span class="price-tag">€${tk.price}</span></div>
-        <div style="height:1px;background:rgba(255,255,255,.06);margin:10px 0;"></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;color:var(--text-dim);">Diritti prevendita</span><span style="font-size:12px;color:var(--text-dim);">+€1.00</span></div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px;"><span style="font-size:13px;font-weight:600;">Totale</span><span class="price-tag">€${(tk.price+1).toFixed(2)}</span></div>
-      </div>
-      <div class="f-wrap"><label class="f-label">Nome su biglietto</label><input type="text" class="f-input" id="bName" value="${curUser?.name||''}" placeholder="Mario Rossi"/></div>
-      <div class="f-wrap"><label class="f-label">Email</label><input type="email" class="f-input" id="bEmail" value="${curUser?.email||''}" placeholder="email@esempio.it"/></div>
-      <div class="f-wrap"><label class="f-label">Numero carta (demo)</label><input type="text" class="f-input" id="bCard" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="f-wrap"><label class="f-label">Scadenza</label><input type="text" class="f-input" placeholder="MM/AA" maxlength="5"/></div>
-        <div class="f-wrap"><label class="f-label">CVV</label><input type="text" class="f-input" placeholder="123" maxlength="3"/></div>
-      </div>
-      <button class="btn-p" style="width:100%;margin-top:6px;" onclick="pay()">🔒 Paga €${(tk.price+1).toFixed(2)} · Ottieni il Pass</button>
-      <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-mute);">Pagamento sicuro · SSL · Demo mode</div>
-    </div>`;
-  go('checkout');
-}
+<section id="momenti">
+  <div class="wrap">
+    <div class="sec-title reveal"><span class="eyebrow">Dalla mattina alla sera</span><h2>I <em>momenti</em> della giornata</h2></div>
+    <div class="moments">
+      <div class="moment reveal"><div class="time">5:45</div><h3>Il mattino</h3><p>Caffè, cappuccino e cornetto caldo appena il sole tocca le colline. Il modo giusto di iniziare.</p></div>
+      <div class="moment reveal"><div class="time">12:30</div><h3>La pausa</h3><p>Un panino, una piadina, due chiacchiere. La sosta per chi è di passaggio e per chi ci vive.</p></div>
+      <div class="moment reveal"><div class="time">18:00</div><h3>L'aperitivo</h3><p>Calici, spritz e stuzzichini fino alle ventitré. Il finale perfetto di ogni giornata.</p></div>
+    </div>
+  </div>
+</section>
 
-function fmtCard(inp){let v=inp.value.replace(/\D/g,'').slice(0,16);inp.value=v.replace(/(.{4})/g,'$1 ').trim();}
+<section id="gallery">
+  <div class="wrap">
+    <div class="sec-title reveal"><span class="eyebrow">Atmosfera</span><h2>Dentro al <em>Rewindbar</em></h2></div>
+    <div class="carousel reveal" id="carousel">
+      <div class="track" id="track"></div>
+      <button class="arrow prev" id="prev" aria-label="Precedente">&#8249;</button>
+      <button class="arrow next" id="next" aria-label="Successiva">&#8250;</button>
+      <div class="counter"><b id="cur">1</b> / <span id="tot">5</span></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <p class="note">Foto da Google Maps (contributi dei clienti) — da sostituire con scatti professionali del locale prima della pubblicazione.</p>
+  </div>
+</section>
 
-// ═══════════════ PAYMENT ═══════════════
-function pay(){
-  const name=document.getElementById('bName')?.value.trim();
-  const email=document.getElementById('bEmail')?.value.trim();
-  if(!name||!email||!email.includes('@')){toast('⚠️ Compila nome ed email validi.');return;}
-  const ov=document.getElementById('procOv'),txt=document.getElementById('procTxt');
-  ov.classList.add('show');
-  const steps=['Verifica identità…','Sicurezza transazione…','Processing payment…','Generazione pass…'];
-  let i=0;
-  const iv=setInterval(()=>{txt.textContent=steps[i%steps.length];i++;},700);
-  setTimeout(()=>{clearInterval(iv);ov.classList.remove('show');genTicket(name,email);},3200);
-}
-
-// ═══════════════ TICKET ═══════════════
-function genTicket(name,email){
-  const ev=selEv,tk=selTk;
-  const id='NP-'+ev.id+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
-  const qrData=`NIGHTPASS|${id}|${ev.id}|${name}|${email}|${tk.type}`;
-  const pass={id,eventId:ev.id,eventTitle:ev.title,eventDate:ev.date,eventVenue:`${ev.venue}, ${ev.city}`,ticketType:tk.type,price:tk.price,name,email,qrData,purchasedAt:new Date().toISOString()};
-  passes.push(pass);save('np_passes',passes);
-  buildPassPage(pass,'ticketC',true);
-  go('ticket');
-  setTimeout(()=>buildQR('qrcode',qrData),250);
-}
-
-function buildPassPage(pass,cid,isNew){
-  document.getElementById(cid).innerHTML=`
-    <div style="padding-top:12px;">
-      ${!isNew?`<button class="back-btn" onclick="go('passes')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>I miei pass</button>`:''}
-      ${isNew?`<div style="text-align:center;margin-bottom:24px;"><div style="font-size:48px;margin-bottom:8px;">🎉</div><div class="syne" style="font-size:26px;font-weight:800;margin-bottom:4px;">PASS CONFERMATO</div><div style="font-size:13px;color:var(--text-dim);">Copia inviata a ${pass.email}</div></div>`:''}
-      <div class="pass-card">
-        <div class="pass-head">
-          <div style="font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;opacity:.75;margin-bottom:6px;">NIGHTPASS · ${pass.ticketType.toUpperCase()}</div>
-          <div class="syne" style="font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1;">${pass.eventTitle}</div>
-        </div>
-        <div style="padding:18px 20px;position:relative;z-index:1;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Titolare</div><div style="font-size:13px;font-weight:600;">${pass.name}</div></div>
-            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Tipologia</div><div style="font-size:13px;font-weight:600;color:var(--blue-light);">${pass.ticketType}</div></div>
-            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Data</div><div style="font-size:12px;font-weight:500;">${pass.eventDate}</div></div>
-            <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Venue</div><div style="font-size:12px;font-weight:500;">${pass.eventVenue.split(',')[0]}</div></div>
+<section id="visita">
+  <div class="wrap">
+    <div class="sec-title reveal"><span class="eyebrow">Vieni a trovarci</span><h2>Dove &amp; <em>quando</em></h2></div>
+    <div class="visit">
+      <div class="panel reveal">
+        <h3>Orari</h3>
+        <div class="hrow"><span class="d">Lunedì</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow"><span class="d">Martedì</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow"><span class="d">Mercoledì</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow"><span class="d">Giovedì</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow"><span class="d">Venerdì</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow"><span class="d">Sabato</span><span class="t">05:45 — 23:00</span></div>
+        <div class="hrow closed"><span class="d">Domenica</span><span class="t">Chiuso</span></div>
+        <div class="addr">
+          <span class="k">Indirizzo</span>
+          Via Cà Pazzaglia, 42<br>
+          47854 Trarivi · Montescudo-Monte Colombo (RN)
+          <div style="margin-top:1.2rem">
+            <a href="https://maps.google.com/?cid=863158855268238757" target="_blank" rel="noopener" class="btn btn-line" style="display:inline-block">Apri in Google Maps</a>
           </div>
         </div>
-        <div class="pass-div"><div class="notch"></div></div>
-        <div class="pass-qr"><div id="${isNew?'qrcode':'qrcode-detail'}"></div></div>
-        <div style="padding:15px 20px;">
-          <div style="font-size:10px;color:var(--blue-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">Pass ID</div>
-          <div style="font-size:14px;font-weight:600;letter-spacing:.06em;">${pass.id}</div>
-        </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">
-        ${isNew?`<button class="btn-p" style="width:100%;" onclick="go('passes')">📱 Tutti i miei Pass</button>`:''}
-        <button class="btn-g" style="width:100%;" onclick="go('home')">← Torna agli eventi</button>
+      <div class="map reveal">
+        <iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=Rewindbar%20Via%20C%C3%A0%20Pazzaglia%2042%20Trarivi%20Montescudo&z=15&output=embed"
+          title="Mappa Rewindbar"></iframe>
       </div>
-    </div>`;
-}
+    </div>
+  </div>
+</section>
 
-function buildQR(elId,data){
-  const el=document.getElementById(elId);
-  if(!el||!window.QRCode)return;
-  el.innerHTML='';
-  new QRCode(el,{text:data,width:160,height:160,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-}
+<footer>
+  <div class="wrap">
+    <div class="foot-brand reveal in">Rewind<b>bar</b></div>
+    <p class="foot-tag">Trarivi di Montescudo</p>
+    <div class="foot-links">
+      <a href="#storia">Storia</a><a href="#momenti">I momenti</a><a href="#gallery">Gallery</a><a href="#visita">Dove siamo</a>
+    </div>
+    <hr class="gold-rule">
+    <p class="copy">© 2026 Rewindbar · Via Cà Pazzaglia 42, Trarivi (RN) · Lun–Sab 5:45–23:00</p>
+  </div>
+</footer>
 
-// ═══════════════ MY PASSES ═══════════════
-function renderPasses(){
-  const c=document.getElementById('passesList');
-  const up=passes.filter(p=>curUser&&p.email===curUser.email);
-  if(!up.length){
-    c.innerHTML=`<div class="empty-st"><div style="font-size:60px;opacity:.2;">🎟</div><div class="syne" style="font-size:24px;font-weight:800;opacity:.35;">NESSUN PASS</div><div style="font-size:13px;color:var(--text-mute);max-width:220px;">Acquista il tuo primo biglietto per vederlo qui</div><button class="btn-p" onclick="go('home')" style="margin-top:8px;">Esplora eventi</button></div>`;
-    return;
-  }
-  c.innerHTML=up.map(p=>`
-    <div class="glass" style="border-radius:20px;overflow:hidden;margin-bottom:14px;cursor:pointer;transition:all .25s ease;" onclick="openPass('${p.id}')" onmouseenter="this.style.borderColor='var(--blue-border)'" onmouseleave="this.style.borderColor='var(--glass-border)'">
-      <div style="background:linear-gradient(135deg,var(--blue) 0%,#1e3a8a 100%);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
-        <div><div class="syne" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">${p.eventTitle}</div><div style="font-size:11px;opacity:.75;letter-spacing:.08em;">${p.ticketType.toUpperCase()}</div></div>
-        <div style="font-size:28px;">🎟</div>
-      </div>
-      <div style="padding:14px 18px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:11px;">
-          <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Data</div><div style="font-size:13px;">${p.eventDate}</div></div>
-          <div><div style="font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Venue</div><div style="font-size:13px;">${p.eventVenue.split(',')[0]}</div></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:11px;color:var(--blue-light);font-weight:500;">${p.id}</span>
-          <span style="font-size:11px;color:var(--text-mute);">Tap per QR →</span>
-        </div>
-      </div>
-    </div>`).join('');
-}
+<script>
+  const photos=[
+    "https://lh3.googleusercontent.com/place-photos/AJRVUZMadUc74kBJO42AbQ5VMjPLDhfa3nApz69RO9WBBR1EqiiukfXp3zQCfnofrCRbWy6ex0DAn6inpgYegEDv1hPvtQ6dWi0lKnEvRmzC5SgqlaE61si-4DmixYJw8WDFiz_VAPiYLo_PIWeKcv-HlPw2DQ=s1600",
+    "https://lh3.googleusercontent.com/place-photos/AJRVUZNfwuASfEBFgP_EDqxMHxtW_HSRLm4lUrm1UW0Q6gQxq3xU3s-g_okwcZvx6_yOev0D1cAxTZgZKQmnvAFChwjnBdiw1fnv0CliNTtjYwinsm5DH9NfHk2ii7FZqqwZtaRQr5T6KA3cmw3pZQ=s1600",
+    "https://lh3.googleusercontent.com/place-photos/AJRVUZMKr-CCTFE4aKe9lBMK58QhBf7-S-TDdjX7hlQBgsryOsCIMocQ1ezKlBuoHkMzjPtJV_db0YMgvKVwB41jCUjooRiaHAZkE0-2TjbFDh2eA-hGticsbbnXbmnyf71-H8SFx8zErPN7gVbE668j8zILLg=s1600",
+    "https://lh3.googleusercontent.com/place-photos/AJRVUZPbEkNSiYepoBh6aBMnoe59HqfGDe56GVh16XPCaAW7vC_wJU5t6Xjd2TN7_LuVFpE57l3F_qyaJaaIZs7lpbbCH7v0mt83LtDXd3sCyjDlbVspo1m5v5-3FojpcEW0IY-ldokloCCvo9tCpZCZBoa9FA=s1600",
+    "https://lh3.googleusercontent.com/place-photos/AJRVUZM0XqUAeSqTErNGLsOvVbTkJGTw5IQu3TLDBj_j2yvS85fHnbK9NtvaJq8KASbxXJcSDRIkJ2uIlH39HDc5alln7fJSkx7ToZvsIxa5eJOe-4VSJronJliIn_kk2BZyk2UOKGgVz58E88p4DGO443bdXA=s1600"
+  ];
+  // hero fallback uses the first photo (until you add hero.mp4)
+  document.getElementById('heroFallback').style.backgroundImage="url('"+photos[0]+"')";
 
-function openPass(id){
-  const p=passes.find(x=>x.id===id);if(!p)return;
-  buildPassPage(p,'ticketC',false);
-  go('ticket');
-  setTimeout(()=>buildQR('qrcode-detail',p.qrData),250);
-}
+  /* CAROUSEL */
+  const track=document.getElementById('track'),dots=document.getElementById('dots');
+  photos.forEach((u,i)=>{
+    const s=document.createElement('div');s.className='slide';
+    const im=document.createElement('img');im.src=u;im.alt="Rewindbar "+(i+1);im.loading="lazy";s.appendChild(im);track.appendChild(s);
+    const d=document.createElement('button');d.className='dot'+(i===0?' active':'');d.setAttribute('aria-label','Vai alla foto '+(i+1));
+    d.addEventListener('click',()=>go(i));dots.appendChild(d);
+  });
+  document.getElementById('tot').textContent=photos.length;
+  let idx=0,timer;
+  const cur=document.getElementById('cur');
+  function render(){track.style.transform='translateX(-'+(idx*100)+'%)';
+    cur.textContent=idx+1;
+    [...dots.children].forEach((d,i)=>d.classList.toggle('active',i===idx));}
+  function go(i){idx=(i+photos.length)%photos.length;render();restart();}
+  function next(){go(idx+1)}function prev(){go(idx-1)}
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+  function restart(){clearInterval(timer);timer=setInterval(next,5000)}
+  restart();
+  const car=document.getElementById('carousel');
+  car.addEventListener('mouseenter',()=>clearInterval(timer));
+  car.addEventListener('mouseleave',restart);
+  // swipe
+  let sx=0;
+  car.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  car.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40){dx<0?next():prev()}});
 
-// ═══════════════ INIT ═══════════════
-renderGrid(EVENTS,'evGrid');
-renderUpstrip();
-updateAvatar();
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40));
+  const burger=document.getElementById('burger'),links=document.getElementById('navlinks');
+  burger.addEventListener('click',()=>{const o=links.classList.toggle('open');burger.classList.toggle('open',o);document.body.style.overflow=o?'hidden':''});
+  document.querySelectorAll('[data-close]').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');burger.classList.remove('open');document.body.style.overflow=''}));
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
 </script>
 </body>
 </html>
